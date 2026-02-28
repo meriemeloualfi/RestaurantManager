@@ -1,0 +1,271 @@
+﻿@model RestaurantManager.Models.Ingredient
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajout Stock | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-content {
+            padding: 40px !important;
+        }
+
+        .inventory-card {
+            background: white;
+            border-radius: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            overflow: hidden;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        .form-side {
+            padding: 50px;
+        }
+
+            .form-side h2 {
+                font-weight: 800;
+                color: #0f172a;
+                margin-bottom: 30px;
+            }
+
+        .label-pro {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .input-wrapper i {
+                position: absolute;
+                left: 20px;
+                color: #ff7b2e;
+            }
+
+        .form-control-pro {
+            width: 100%;
+            padding: 14px 15px 14px 55px;
+            border-radius: 15px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+            .form-control-pro:focus {
+                border-color: #ff7b2e;
+                background: white;
+                outline: none;
+                box-shadow: 0 10px 25px rgba(255, 123, 46, 0.08);
+            }
+
+        /* --- IMAGE UPLOAD STYLE --- */
+        .image-upload-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #e2e8f0;
+            border-radius: 20px;
+            background: #fbfcfd;
+            transition: 0.3s;
+        }
+
+            .image-upload-container:hover {
+                border-color: #ff7b2e;
+            }
+
+        #preview {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            display: none;
+        }
+
+        .info-side {
+            background: #1e293b;
+            padding: 50px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .info-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 123, 46, 0.1);
+            color: #ff7b2e;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+        }
+
+        .btn-add-stock {
+            background: #ff7b2e;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 18px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(255, 123, 46, 0.2);
+        }
+
+            .btn-add-stock:hover {
+                background: #e66a22;
+                transform: translateY(-4px);
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link active" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="mb-4">
+                <a asp-action="Index" class="text-muted text-decoration-none fw-bold small">
+                    <i class="fa-solid fa-arrow-left me-2"></i> RETOUR À L'INVENTAIRE
+                </a>
+            </div>
+
+            <div class="inventory-card">
+                <div class="form-side">
+                    <h2>Nouvel <span class="text-orange-resto">Ingrédient</span></h2>
+
+                    <!-- AJOUT : enctype pour l'image -->
+                    <form asp-action="Create" enctype="multipart/form-data">
+
+                        <!-- SECTION IMAGE -->
+                        <div class="image-upload-container">
+                            <img id="preview" src="#" alt="Aperçu" />
+                            <label class="label-pro">Image de l'ingrédient</label>
+                            <input type="file" name="imageFile" class="form-control border-0 bg-transparent shadow-none" accept="image/*" onchange="previewImage(event)" />
+                        </div>
+
+                        <div class="input-block">
+                            <label class="label-pro">Nom de l'ingrédient</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-tag"></i>
+                                <input asp-for="Nom" class="form-control-pro" placeholder="Ex: Fromage, Pommes de terre..." required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="label-pro">Quantité Initiale</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-weight-hanging"></i>
+                                    <input asp-for="QuantiteDisponible" type="number" step="0.1" class="form-control-pro" placeholder="0.0" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label-pro">Unité</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-scale-balanced"></i>
+                                    <select asp-for="Unite" class="form-control-pro">
+                                        <option value="kg">kg</option>
+                                        <option value="L">Litre</option>
+                                        <option value="Unité">Unité</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-block">
+                            <label class="label-pro">Seuil d'alerte</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-bell text-danger"></i>
+                                <input asp-for="SeuilAlerte" type="number" step="0.1" class="form-control-pro" required />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-add-stock">
+                            <i class="fa-solid fa-plus-circle me-2"></i> Ajouter au Stock
+                        </button>
+                    </form>
+                </div>
+
+                <div class="info-side">
+                    <div class="info-icon-circle">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">Visuel Produit</h3>
+                    <p class="text-white-50 small mb-5">
+                        L'ajout d'une photo aide vos équipes à identifier les produits instantanément lors des inventaires.
+                    </p>
+                    <div class="text-start bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10">
+                        <div class="mb-3 small"><i class="fa-solid fa-circle-check text-success me-2"></i> Formats: JPG, PNG, WEBP</div>
+                        <div class="mb-3 small"><i class="fa-solid fa-circle-check text-success me-2"></i> Identification rapide</div>
+                        <div class="small"><i class="fa-solid fa-circle-check text-success me-2"></i> Interface intuitive</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('preview');
+                output.src = reader.result;
+                output.style.display = 'inline-block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>

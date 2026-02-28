@@ -1,0 +1,328 @@
+﻿@model RestaurantManager.Models.ServeurDashboardViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Espace Serveur | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: #475569;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 12px 20px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 15px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: var(--primary-orange);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+                }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        /* STAT CARDS (Style Gérant avec Watermark) */
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .watermark {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+            z-index: 1;
+        }
+
+        .bg-orange-light {
+            background: #fff7ed;
+            color: var(--primary-orange);
+        }
+
+        .bg-green-light {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+
+        .bg-red-light {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        /* HEADER PROFILE */
+        .profile-badge {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-orange);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* TABLES & LISTS */
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            height: 100%;
+        }
+
+        .btn-action {
+            background: var(--primary-orange);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .btn-action:hover {
+                background: #e66a22;
+                color: white;
+                transform: scale(1.05);
+            }
+
+        .tache-row {
+            padding: 15px;
+            border-radius: 15px;
+            background: #f8fafc;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link active" asp-action="Index"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a class="nav-link" asp-action="PrendreCommande"><i class="fa-solid fa-plus-circle"></i> Prendre Commande</a>
+                <a class="nav-link" asp-action="ListeReservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" asp-action="MesTaches"><i class="fa-solid fa-list-check"></i> Mes Tâches</a>
+                <a class="nav-link" asp-action="MesVentes"><i class="fa-solid fa-receipt"></i> Mes Ventes</a>
+
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: auto; padding-bottom: 20px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 text-danger w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <!-- HEADER (Comme le Gérant) -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-0">Tableau de bord <span class="text-orange-resto">Serveur</span></h2>
+                    <small class="text-muted">Bonjour, prêt pour le service du @DateTime.Now.ToString("dd MMMM") ?</small>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+       
+                    <div class="profile-badge d-flex align-items-center">
+                        <div class="me-3 text-end d-none d-sm-block">
+                            <div class="fw-bold small">@User.Identity.Name</div>
+                            <small class="text-muted" style="font-size: 0.7rem;">Session active</small>
+                        </div>
+                        <div class="avatar-circle">S</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS (Style avec Watermark) -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-orange-light"><i class="fa-solid fa-utensils"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Commandes du jour</h6>
+                        <h3 class="fw-bold mb-0">@Model.NbCommandesPrises</h3>
+                        <i class="fa-solid fa-utensils watermark"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-green-light"><i class="fa-solid fa-calendar-day"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Arrivées Prévues</h6>
+                        <h3 class="fw-bold mb-0">@Model.ReservationsDuJour.Count</h3>
+                        <i class="fa-solid fa-calendar-day watermark"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-red-light"><i class="fa-solid fa-clipboard-list"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Missions en attente</h6>
+                        <h3 class="fw-bold mb-0 text-danger">@Model.MesTaches.Count</h3>
+                        <i class="fa-solid fa-clipboard-list watermark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- TÂCHES -->
+                <div class="col-lg-7">
+                    <div class="table-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2 text-orange-resto"></i>Mes Missions</h5>
+                            <a asp-action="MesTaches" class="btn btn-sm btn-light rounded-pill px-3">Tout voir</a>
+                        </div>
+
+                        @if (!Model.MesTaches.Any())
+                        {
+                            <div class="text-center py-4 text-muted">
+                                <i class="fa-solid fa-check-circle fa-2x mb-2 text-success"></i>
+                                <p>Bravo ! Toutes vos tâches sont terminées.</p>
+                            </div>
+                        }
+
+                        @foreach (var tache in Model.MesTaches.Take(4))
+                        {
+                            <div class="tache-row d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark">@tache.Description</h6>
+                                    <small class="text-muted"><i class="fa-regular fa-clock me-1"></i> Ajouté aujourd'hui</small>
+                                </div>
+                                <form asp-action="UpdateStatut" method="post">
+                                    <input type="hidden" name="id" value="@tache.IdTache" />
+                                    <button name="nouveauStatut" value="Terminé" class="btn btn-sm btn-success rounded-pill px-3">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- RÉSERVATIONS -->
+                <div class="col-lg-5">
+                    <div class="table-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0"><i class="fa-solid fa-user-group me-2 text-success"></i>Clients Attendus</h5>
+                            <span class="badge bg-light text-dark border">@DateTime.Now.ToString("dd/MM")</span>
+                        </div>
+
+                        @if (!Model.ReservationsDuJour.Any())
+                        {
+                            <p class="text-center text-muted py-5">Aucune réservation pour aujourd'hui.</p>
+                        }
+
+                        @foreach (var res in Model.ReservationsDuJour.Take(5))
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light p-2 rounded-3 me-3 text-center" style="min-width: 55px;">
+                                        <div class="fw-bold text-dark">@res.Heure</div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@res.NomClient</h6>
+                                        <small class="text-muted">Table @res.NumeroTable • @res.NbPersonnes pers.</small>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-light"></i>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

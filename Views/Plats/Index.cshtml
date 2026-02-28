@@ -1,0 +1,173 @@
+﻿@model IEnumerable<RestaurantManager.Models.Plat>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalogue Menu - Food Dash</title>
+
+    <!-- CSS de base -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Toastr CSS pour les notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* Configuration de la Sidebar pour pousser le bouton en bas */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+            /* On force le nav à prendre tout l'espace pour pousser le dernier élément */
+            .sidebar .nav {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+        /* Style du bouton déconnexion en rouge et placé en bas */
+        .logout-container {
+            margin-top: auto; /* Pousse vers le bas */
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-logout {
+            color: #dc3545 !important; /* Rouge Bootstrap */
+            font-weight: 600;
+            transition: all 0.2s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: block;
+            width: 100%;
+        }
+
+            .btn-logout:hover {
+                background-color: #fff5f5 !important;
+                color: #a52834 !important;
+            }
+
+            /* Espacement des icônes */
+            .nav-link i, .btn-logout i {
+                width: 25px;
+            }
+    </style>
+</head>
+<body class="admin-body">
+
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link active" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+
+                <!-- Section Déconnexion -->
+                <div class="logout-container">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Gestion du <span class="text-orange-resto">Menu</span></h2>
+                    <p class="text-muted">Gérez la carte de votre restaurant</p>
+                </div>
+                <a asp-action="Create" class="btn btn-orange shadow-sm px-4 py-2">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Ajouter un plat
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- CARTE AJOUTER -->
+                <div class="col-xl-4 col-md-6">
+                    <a asp-action="Create" class="add-card">
+                        <div class="bg-light rounded-circle p-4 mb-3">
+                            <i class="fa-solid fa-plus fa-2x"></i>
+                        </div>
+                        <h5 class="fw-bold">Nouveau Plat</h5>
+                    </a>
+                </div>
+
+                <!-- BOUCLE DES PLATS -->
+                @foreach (var item in Model)
+                {
+                    <div class="col-xl-4 col-md-6">
+                        <div class="modern-card">
+                            <div class="img-header">
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                {
+                                    <img src="~/images/plats/@item.ImagePath" alt="@item.Nom" asp-append-version="true" />
+                                }
+                                else
+                                {
+                                    <img src="https://via.placeholder.com/500x300?text=Pas+d'image" />
+                                }
+                                <div class="price-tag">@item.Prix.ToString("N2") DH</div>
+                            </div>
+
+                            <div class="card-body-content text-center">
+                                <h5 class="mb-2">@item.Nom</h5>
+                                <p class="text-muted small">@item.Description</p>
+                            </div>
+
+                            <div class="card-footer-actions">
+                                <a asp-action="Details" asp-route-id="@item.IdPlat" class="circle-btn btn-view" title="Voir">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.IdPlat" class="circle-btn btn-edit" title="Modifier">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.IdPlat" class="circle-btn btn-delete" title="Supprimer">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>toastr.success('@TempData["Success"]');</script>
+    }
+    @if (TempData["DeleteSuccess"] != null)
+    {
+        <script>
+            toastr.options = { "progressBar": true, "closeButton": true };
+            toastr.error('@TempData["DeleteSuccess"]', 'Suppression');
+        </script>
+    }
+
+</body>
+</html>

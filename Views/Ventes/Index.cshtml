@@ -1,0 +1,334 @@
+﻿@model IEnumerable<RestaurantManager.Models.Vente>
+
+@{
+    Layout = null;
+    var totalVentes = Model.Sum(v => v.MontantTotal);
+    var nbVentes = Model.Count();
+    var totalRemises = Model.Sum(v => v.Remise);
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historique des Ventes | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            width: 100%;
+        }
+
+        /* SIDEBAR FIXE */
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        /* CONTENU PRINCIPAL */
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .text-orange-resto {
+            color: #ff7b2e;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+            .nav-link.active {
+                background: #ff7b2e;
+                color: white;
+            }
+
+            .nav-link i {
+                margin-right: 15px;
+                width: 20px;
+                text-align: center;
+            }
+
+        /* --- STYLE BOUTON EXPORT (FIXÉ) --- */
+        .btn-export-custom {
+            background-color: white !important;
+            color: #64748b !important;
+            border: 1px solid #e2e8f0 !important;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+            .btn-export-custom:hover {
+                color: #ff7b2e !important;
+                border-color: #ff7b2e !important;
+                background-color: #fff5ed !important;
+            }
+
+            .btn-export-custom:active, .btn-export-custom:focus {
+                background-color: #ff7b2e !important;
+                color: white !important;
+                border-color: #ff7b2e !important;
+                box-shadow: 0 0 0 0.25rem rgba(255, 123, 46, 0.25) !important;
+            }
+
+        /* --- BENTO STATS --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .bento-stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            color: #1e293b;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+            .stat-value span {
+                color: #ff7b2e;
+                font-size: 0.9rem;
+                margin-left: 5px;
+            }
+
+        .bento-stat-card i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5rem;
+            color: #ff7b2e;
+            opacity: 0.1;
+        }
+
+        /* --- TABLE STYLE --- */
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 25px;
+            width: 100%;
+        }
+
+        .price-badge {
+            background: #fff5ed;
+            color: #ff7b2e;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .btn-facture-circle {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #1e293b;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+            .btn-facture-circle:hover {
+                background: #ff7b2e;
+                color: white;
+                box-shadow: 0 5px 15px rgba(255, 123, 46, 0.3);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link active" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Journal des <span class="text-orange-resto">Ventes</span></h2>
+                    <p class="text-muted small">Suivi du chiffre d'affaires et factures.</p>
+                </div>
+                <div>
+                    <!-- Utilisation de la nouvelle classe btn-export-custom -->
+                    <button onclick="exportTableToCSV('ventes-food-dash.csv')" class="btn btn-export-custom shadow-sm px-4 rounded-3">
+                        <i class="fa-solid fa-download me-2"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-stat-card">
+                    <span class="stat-label">Chiffre d'affaires</span>
+                    <div class="stat-value">@totalVentes.ToString("N2") <span>DH</span></div>
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="bento-stat-card">
+                    <span class="stat-label">Transactions</span>
+                    <div class="stat-value">@nbVentes <span>Ventes</span></div>
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <div class="bento-stat-card">
+                    <span class="stat-label">Remises accordées</span>
+                    <div class="stat-value text-danger">@totalRemises.ToString("N2") <span>DH</span></div>
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle" id="ventesTable">
+                        <thead class="small text-uppercase text-muted">
+                            <tr>
+                                <th class="border-0">Date & Heure</th>
+                                <th class="border-0">Commande</th>
+                                <th class="border-0">Montant Brut</th>
+                                <th class="border-0">Remise</th>
+                                <th class="border-0">Total Payé</th>
+                                <th class="border-0 text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.DateVente.ToString("dd MMM yyyy")</div>
+                                        <small class="text-muted">@item.DateVente.ToString("HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">#@item.CommandeId</span>
+                                    </td>
+                                    <td>@item.MontantBrut.ToString("N2") DH</td>
+                                    <td>
+                                        @if (item.Remise > 0)
+                                        {
+                                            <span class="text-danger fw-bold">-@item.Remise.ToString("N2")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="price-badge">@item.MontantTotal.ToString("N2") DH</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex justify-content-end">
+                                            <a href="/Serveur/VoirFacture/@(item.Facture?.IdFacture ?? item.IdVente)"
+                                               class="btn-facture-circle shadow-sm" title="Voir la facture">
+                                                <i class="fa-solid fa-file-invoice"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fa-solid fa-receipt fa-3x text-light mb-3"></i>
+                            <p class="text-muted">Aucune vente enregistrée.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportTableToCSV(filename) {
+            var csv = [];
+            var rows = document.querySelectorAll("#ventesTable tr");
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+
+                for (var j = 0; j < cols.length - 1; j++) {
+                    var text = cols[j].innerText.trim().replace(/\n/g, ' ');
+                    row.push('"' + text + '"');
+                }
+                csv.push(row.join(","));
+            }
+
+            var csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+            var downloadLink = document.createElement("a");
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        }
+    </script>
+
+</body>
+</html>

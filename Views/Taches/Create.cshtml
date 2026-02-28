@@ -1,0 +1,220 @@
+﻿@model RestaurantManager.Models.Tache
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assigner Mission | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-content {
+            padding: 40px !important;
+        }
+
+        /* --- WOW CARD DESIGN --- */
+        .task-master-card {
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+            max-width: 700px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .task-header {
+            background: #1e293b;
+            padding: 50px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+            .task-header h2 {
+                font-weight: 800;
+                margin-bottom: 10px;
+                font-size: 2rem;
+            }
+
+        .task-body {
+            padding: 50px;
+        }
+
+        /* --- INPUT STYLES --- */
+        .label-pro {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+            .input-wrapper i {
+                position: absolute;
+                left: 20px;
+                color: #ff7b2e;
+                font-size: 1.2rem;
+            }
+
+        .form-control-pro {
+            width: 100%;
+            padding: 16px 20px 16px 60px;
+            border-radius: 20px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-weight: 500;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+            .form-control-pro:focus {
+                border-color: #ff7b2e;
+                background: white;
+                outline: none;
+                box-shadow: 0 10px 25px rgba(255, 123, 46, 0.1);
+                transform: translateY(-2px);
+            }
+
+        /* --- BUTTONS --- */
+        .btn-assign-wow {
+            background: #ff7b2e;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 15px 30px rgba(255, 123, 46, 0.25);
+        }
+
+            .btn-assign-wow:hover {
+                background: #e66a22;
+                transform: translateY(-4px);
+                box-shadow: 0 20px 40px rgba(255, 123, 46, 0.35);
+                color: white;
+            }
+
+        .btn-cancel-flat {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            transition: 0.2s;
+        }
+
+            .btn-cancel-flat:hover {
+                color: #1e293b;
+            }
+
+        .icon-badge {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 123, 46, 0.2);
+            color: #ff7b2e;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR INTEGRÉE -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link active" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: 100px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 text-danger w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- Bouton de retour discret -->
+            <div class="mb-5">
+                <a href="javascript:history.back()" class="text-muted text-decoration-none fw-bold small">
+                    <i class="fa-solid fa-arrow-left me-2"></i> RETOUR AU PROFIL
+                </a>
+            </div>
+
+            <!-- CARD WOW -->
+            <div class="task-master-card">
+                <div class="task-header">
+                    <div class="icon-badge">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h2>Assigner une <span class="text-orange-resto">Mission</span></h2>
+                    <p class="text-white-50 mb-0">Définissez les objectifs pour la journée.</p>
+                </div>
+
+                <div class="task-body">
+                    <form asp-action="Create" asp-controller="Taches">
+                        <!-- ID de l'employé caché -->
+                        <input type="hidden" name="EmployeId" value="@ViewBag.EmployeId" />
+
+                        <!-- Champ Description -->
+                        <label class="label-pro">Description de la mission</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-pen-nib"></i>
+                            <textarea asp-for="Description" class="form-control-pro" rows="3" placeholder="Ex: Nettoyage complet de la zone de stockage..." style="padding-left: 60px;"></textarea>
+                        </div>
+
+                        <!-- Champ Date de fin -->
+                        <label class="label-pro">Échéance (Deadline)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                            <input asp-for="DateFin" type="datetime-local" class="form-control-pro" required />
+                        </div>
+
+                        <!-- Actions -->
+                        <button type="submit" class="btn-assign-wow">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Envoyer la mission
+                        </button>
+
+                        <a href="javascript:history.back()" class="btn-cancel-flat">
+                            Abandonner
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,306 @@
+﻿@model RestaurantManager.Models.Tache
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Édition Mission | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --orange-dash: #ff7b2e;
+            --navy-dash: #1e293b; /* Le bleu marine de ta sidebar */
+            --bg-soft: #f4f7fa;
+        }
+
+        body {
+            background-color: var(--bg-soft);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR BLEU MARINE (Comme ta suppression) --- */
+        .sidebar {
+            width: 280px;
+            background: var(--navy-dash);
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            color: white;
+        }
+
+            .sidebar h3 {
+                color: white;
+                font-weight: 700;
+                margin-bottom: 50px;
+                padding-left: 15px;
+            }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7);
+            font-weight: 500;
+            padding: 14px 20px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+            .nav-link i {
+                font-size: 1.2rem;
+                width: 25px;
+            }
+
+            .nav-link.active {
+                background: var(--orange-dash);
+                color: white;
+                box-shadow: 0 10px 20px rgba(255, 123, 46, 0.2);
+            }
+
+            .nav-link:hover:not(.active) {
+                background: rgba(255,255,255,0.1);
+                color: white;
+            }
+
+        .text-orange-resto {
+            color: var(--orange-dash);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* --- CARD EDIT WOW --- */
+        .premium-edit-card {
+            background: white;
+            border-radius: 40px;
+            padding: 70px 45px 45px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            text-align: center;
+        }
+
+        .icon-badge-top {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--orange-dash), #ff9d66);
+            color: white;
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-5deg);
+            box-shadow: 0 20px 40px rgba(255, 123, 46, 0.3);
+            border: 8px solid white;
+        }
+
+        .assignment-pill {
+            background: #fff5ed;
+            color: var(--orange-dash);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--navy-dash);
+            font-weight: 800;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            display: block;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 10px;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+            .input-wrapper i {
+                position: absolute;
+                left: 20px;
+                top: 48px;
+                color: #cbd5e1;
+                font-size: 1.1rem;
+            }
+
+        .form-control-wow {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            border-radius: 20px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .form-control-wow:focus {
+                outline: none;
+                border-color: var(--orange-dash);
+                background: white;
+                box-shadow: 0 10px 25px rgba(255, 123, 46, 0.1);
+            }
+
+        /* Status Box */
+        .status-card {
+            background: #f8fafc;
+            border: 2px dashed #e2e8f0;
+            border-radius: 25px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 35px;
+            text-align: left;
+        }
+
+        .btn-update {
+            background: var(--navy-dash);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 22px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.3s;
+        }
+
+            .btn-update:hover {
+                background: var(--orange-dash);
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(255, 123, 46, 0.3);
+            }
+
+        .btn-cancel {
+            display: block;
+            margin-top: 25px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- SIDEBAR (STYLE NAVY) -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link active" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: 100px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="main-content">
+            <div class="premium-edit-card shadow-lg">
+                <div class="icon-badge-top">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+
+                <div class="assignment-pill">
+                    <i class="fa-solid fa-user-circle"></i> Collaborateur : @Model.Employe?.Nom
+                </div>
+                <h2>Mise à jour Mission</h2>
+
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="IdTache" />
+                    <input type="hidden" asp-for="EmployeId" />
+
+                    <div class="input-wrapper">
+                        <label asp-for="Description">Description de la mission</label>
+                        <i class="fa-solid fa-pen-nib"></i>
+                        <textarea asp-for="Description" class="form-control-wow" rows="2"></textarea>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <label asp-for="DateFin">Échéance (Date & Heure)</label>
+                        <i class="fa-solid fa-clock"></i>
+                        <input asp-for="DateFin" class="form-control-wow" type="datetime-local" />
+                    </div>
+
+                    <div class="status-card">
+                        <div>
+                            <span class="d-block fw-bold text-dark">Statut actuel</span>
+                            <span class="small text-muted">La mission est-elle terminée ?</span>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="EstTerminee" style="width: 45px; height: 24px; cursor: pointer;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-update">
+                        METTRE À JOUR <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <a href="/Employes/Details/@Model.EmployeId" class="btn-cancel">
+                    Annuler et revenir au profil
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

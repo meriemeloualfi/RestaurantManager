@@ -1,0 +1,197 @@
+﻿@model IEnumerable<RestaurantManager.Models.Tache>
+@{
+    Layout = null;
+    int nbAFaire = Model.Count(t => t.Statut != "En cours" && t.Statut != "Terminé");
+    int nbEnCours = Model.Count(t => t.Statut == "En cours");
+    int nbTermines = Model.Count(t => t.Statut == "Terminé");
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mes Tâches | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR IDENTIQUE */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 12px 20px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 15px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: var(--primary-orange);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+                }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        /* STYLES CONTENU */
+        .stat-mini-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            text-align: center;
+            border-bottom: 4px solid #eee;
+        }
+
+        .card-afaire {
+            border-bottom-color: #6c757d;
+        }
+
+        .card-encours {
+            border-bottom-color: #ffc107;
+        }
+
+        .card-termine {
+            border-bottom-color: #198754;
+        }
+
+        .tache-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: 0.2s;
+            border: 1px solid #edf2f7;
+        }
+
+            .tache-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link" asp-action="Index"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a class="nav-link" asp-action="PrendreCommande"><i class="fa-solid fa-plus-circle"></i> Prendre Commande</a>
+                <a class="nav-link" asp-action="ListeReservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link active" asp-action="MesTaches"><i class="fa-solid fa-list-check"></i> Mes Tâches</a>
+                <a class="nav-link" asp-action="MesVentes"><i class="fa-solid fa-receipt"></i> Mes Ventes</a>
+
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: auto; padding-bottom: 20px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 text-danger w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fw-bold">Mes <span style="color:var(--primary-orange)">Missions Serveur</span></h2>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4"><div class="stat-mini-card card-afaire"><h3 class="fw-bold mb-0">@nbAFaire</h3><small class="text-muted fw-bold">À FAIRE</small></div></div>
+                <div class="col-md-4"><div class="stat-mini-card card-encours"><h3 class="fw-bold mb-0 text-warning">@nbEnCours</h3><small class="text-muted fw-bold">EN COURS</small></div></div>
+                <div class="col-md-4"><div class="stat-mini-card card-termine"><h3 class="fw-bold mb-0 text-success">@nbTermines</h3><small class="text-muted fw-bold">TERMINÉES</small></div></div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="fw-bold mb-4">Liste détaillée</h5>
+                    @foreach (var tache in Model)
+                    {
+                        <div class="tache-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="me-4 text-center" style="width: 60px;">
+                                    <i class="fa-solid @(tache.Statut == "Terminé" ? "fa-circle-check text-success" : (tache.Statut == "En cours" ? "fa-spinner fa-spin text-warning" : "fa-clock text-secondary")) fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">@tache.Description</h6>
+                                    <small class="text-muted">@tache.DateDebut.ToString("dd/MM HH:mm")</small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                @if (tache.Statut != "En cours" && tache.Statut != "Terminé")
+                                {
+                                    <form asp-action="UpdateStatut" method="post">
+                                        <input type="hidden" name="id" value="@tache.IdTache" />
+                                        <input type="hidden" name="nouveauStatut" value="En cours" />
+                                        <button type="submit" class="btn btn-sm btn-warning rounded-pill px-4 fw-bold">Démarrer</button>
+                                    </form>
+                                }
+                                @if (tache.Statut != "Terminé")
+                                {
+                                    <form asp-action="UpdateStatut" method="post">
+                                        <input type="hidden" name="id" value="@tache.IdTache" />
+                                        <input type="hidden" name="nouveauStatut" value="Terminé" />
+                                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-4 fw-bold">Terminer</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

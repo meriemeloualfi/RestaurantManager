@@ -1,0 +1,263 @@
+﻿@model RestaurantManager.Models.Reservation
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détails Réservation | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        .main-content {
+            background-color: #f8fafc;
+            padding: 40px !important;
+        }
+
+        .details-master-card {
+            background: white;
+            border-radius: 32px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            max-width: 900px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        /* --- TOP BAR --- */
+        .details-header {
+            padding: 40px 50px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #ffffff, #fafbfc);
+        }
+
+        .res-id-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* --- CONTENT GRID --- */
+        .details-body {
+            padding: 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .info-card-box {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #eff2f5;
+            transition: 0.3s ease;
+        }
+
+            .info-card-box:hover {
+                border-color: var(--primary-orange);
+                background: white;
+                transform: translateY(-2px);
+            }
+
+        .info-label-pro {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #ff7b2e;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value-pro {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge-big {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* --- NOTES SECTION --- */
+        .notes-area {
+            grid-column: span 2;
+            background: #fff5ed;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px dashed #ff7b2e;
+        }
+
+        /* --- FOOTER --- */
+        .details-footer {
+            padding: 30px 50px;
+            background: #fafbfc;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-edit-main {
+            background: #1e293b;
+            color: white;
+            padding: 12px 35px;
+            border-radius: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+        }
+
+            .btn-edit-main:hover {
+                background: var(--primary-orange);
+                color: white;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(255, 123, 46, 0.3);
+            }
+
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link active" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="mb-4">
+                <a asp-action="Index" class="text-muted text-decoration-none fw-bold small">
+                    <i class="fa-solid fa-arrow-left me-2"></i> RETOUR AU PLANNING
+                </a>
+            </div>
+
+            <div class="details-master-card">
+                <!-- HEADER -->
+                <div class="details-header">
+                    <div>
+                        <span class="res-id-label">Fiche de Réservation #@Model.IdReservation</span>
+                        <h1 class="fw-bold mb-0" style="color: #0f172a;">@Model.NomClient</h1>
+                    </div>
+                    @{
+                        var isCancelled = Model.Statut == "Annulée";
+                    }
+                    <div class="status-badge-lg @(isCancelled ? "status-cancelled" : "")">
+                        <i class="fa-solid @(isCancelled ? "fa-circle-xmark" : "fa-circle-check") me-2"></i>
+                        @Model.Statut.ToUpper()
+                    </div>
+                </div>
+
+                <!-- BODY -->
+                <div class="details-body">
+                    <!-- DATE -->
+                    <div class="info-card-box">
+                        <span class="info-label-pro">Date du repas</span>
+                        <div class="info-value-pro">
+                            <i class="fa-solid fa-calendar-day text-orange-resto"></i>
+                            @Model.DateReservation.ToString("dd MMMM yyyy")
+                        </div>
+                    </div>
+
+                    <!-- HEURE -->
+                    <div class="info-card-box">
+                        <span class="info-label-pro">Heure d'arrivée</span>
+                        <div class="info-value-pro">
+                            <i class="fa-solid fa-clock text-orange-resto"></i>
+                            @Model.Heure
+                        </div>
+                    </div>
+
+                    <!-- COUVERTS -->
+                    <div class="info-card-box">
+                        <span class="info-label-pro">Nombre de personnes</span>
+                        <div class="info-value-pro">
+                            <i class="fa-solid fa-users text-orange-resto"></i>
+                            @Model.NbPersonnes Personnes
+                        </div>
+                    </div>
+
+                    <!-- TABLE (MAINTENANT DYNAMIQUE) -->
+                    <div class="info-card-box">
+                        <span class="info-label-pro">Table assignée</span>
+                        <div class="info-value-pro">
+                            <i class="fa-solid fa-chair text-orange-resto"></i>
+                            @Model.NumeroTable
+                        </div>
+                    </div>
+
+                    <!-- NOTES -->
+                    <div class="notes-area">
+                        <span class="info-label-pro">Remarques & Demandes Spéciales</span>
+                        <div class="info-value-pro" style="font-weight: 400; color: #475569; font-style: italic;">
+                            <i class="fa-solid fa-quote-left text-orange-resto opacity-25 me-3"></i>
+                            @(string.IsNullOrEmpty(Model.Remarques) ? "Aucune demande particulière n'a été spécifiée pour cette table." : Model.Remarques)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="details-footer">
+                    <a asp-action="Delete" asp-route-id="@Model.IdReservation" class="text-danger fw-bold text-decoration-none small">
+                        <i class="fa-solid fa-trash-can me-1"></i> SUPPRIMER DÉFINITIVEMENT
+                    </a>
+                    <div class="d-flex gap-3">
+                        <button onclick="window.print()" class="btn btn-light border px-3 rounded-3 shadow-sm" title="Imprimer le ticket">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                        <a asp-action="Edit" asp-route-id="@Model.IdReservation" class="btn-edit-main">
+                            <i class="fa-solid fa-pen-nib me-2"></i> Modifier la fiche
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

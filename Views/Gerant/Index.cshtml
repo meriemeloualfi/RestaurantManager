@@ -1,0 +1,229 @@
+﻿@model RestaurantManager.Models.GerantDashboardViewModel
+@{
+    Layout = null;
+    int totalAlertes = Model.AlertesStock.Count();
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de Bord | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* Configuration de la Sidebar pour pousser le contenu en bas */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Prend tout l'espace disponible */
+        }
+
+        /* Style du bouton déconnexion */
+        .logout-section {
+            margin-top: auto; /* Pousse vers le bas */
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-logout {
+            color: #dc3545 !important; /* Rouge */
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+            .btn-logout:hover {
+                background-color: #fff5f5;
+                color: #a52834 !important;
+            }
+
+        /* Vos styles existants */
+        .status-badge-critical {
+            background: #fef2f2;
+            color: #ef4444;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid #fee2e2;
+        }
+
+        .img-mini {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="admin-body">
+
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+
+            <nav class="sidebar-nav">
+                <a class="nav-link active" href="#"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+                <a class="nav-link" asp-controller="Plats" asp-action="Index"><i class="fa-solid fa-burger me-2"></i> Menu / Plats</a>
+                <a class="nav-link" asp-controller="Employes" asp-action="Index"><i class="fa-solid fa-users me-2"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check me-2"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box me-2"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line me-2"></i> Ventes</a>
+
+                <!-- Section Déconnexion poussée vers le bas -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout w-100 text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-0">Tableau de bord <span class="text-orange-resto">Gérant</span></h2>
+                    <small class="text-muted">Résumé de l'activité du restaurant au @DateTime.Now.ToString("dd MMMM yyyy")</small>
+                </div>
+
+                <div class="bg-white p-2 rounded-4 shadow-sm border d-flex align-items-center px-3">
+                    <div class="me-3 text-end">
+                        <div class="fw-bold" style="font-size: 0.9rem;">Admin Restaurant</div>
+                        <small class="text-muted">admin@restaurant.com</small>
+                    </div>
+                    <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:40px; height:40px;">AD</div>
+                </div>
+            </div>
+
+            <!-- STATS RÉELLES -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-orange-light">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <h6 class="text-muted small mb-1">Ventes du jour</h6>
+                        <h3 class="fw-bold">@Model.VentesDuJour.ToString("N2") DH</h3>
+                        <i class="fa-solid fa-wallet watermark"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-green-light">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <h6 class="text-muted small mb-1">Commandes Actives</h6>
+                        <h3 class="fw-bold">@Model.NbCommandesActives</h3>
+                        <i class="fa-solid fa-receipt watermark"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card border-@(totalAlertes > 0 ? "danger" : "light")">
+                        <div class="icon-box @(totalAlertes > 0 ? "bg-red-light" : "bg-light")">
+                            <i class="fa-solid fa-triangle-exclamation @(totalAlertes > 0 ? "text-danger" : "text-muted")"></i>
+                        </div>
+                        <h6 class="text-muted small mb-1">Alertes Stock</h6>
+                        <h3 class="fw-bold @(totalAlertes > 0 ? "text-danger" : "")">@totalAlertes Produits</h3>
+                        <i class="fa-solid fa-triangle-exclamation watermark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLEAU DES ALERTES STOCK -->
+            <div class="table-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0" style="color: #1e293b;">
+                        <i class="fa-solid fa-boxes-stacked me-2 text-danger"></i>Alertes Stock Critiques
+                    </h5>
+                    <a href="/Stocks" class="btn btn-sm btn-view-all px-4 rounded-pill">Gérer le stock</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-modern align-middle">
+                        <thead>
+                            <tr>
+                                <th>Ingrédient</th>
+                                <th>Stock Actuel</th>
+                                <th>Seuil d'Alerte</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.AlertesStock.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-circle-check text-success me-2"></i> Aucun produit en alerte de stock.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var item in Model.AlertesStock)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                                {
+                                                    <img src="~/images/ingredients/@item.ImagePath" class="img-mini me-3" alt="">
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light rounded-circle img-mini me-3 d-flex align-items-center justify-content-center">
+                                                        <i class="fa-solid fa-box text-muted small"></i>
+                                                    </div>
+                                                }
+                                                <span class="fw-bold text-dark">@item.Nom</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="text-danger fw-bold">@item.QuantiteDisponible @item.Unite</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted">@item.SeuilAlerte @item.Unite</span>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge-critical">
+                                                <i class="fa-solid fa-arrow-down-long me-1"></i> Stock Faible
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Stocks" asp-action="Edit" asp-route-id="@item.IdIngredient" class="btn btn-sm btn-outline-dark rounded-pill">
+                                                Réapprovisionner
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,275 @@
+﻿@model RestaurantManager.Models.Employe
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modifier Collaborateur | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        .main-content {
+            background-color: #f8fafc;
+        }
+
+        .edit-card-master {
+            background: white;
+            border-radius: 30px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            overflow: hidden;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .edit-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            min-height: 600px;
+        }
+
+        /* --- CÔTÉ FORMULAIRE --- */
+        .form-panel {
+            padding: 50px;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .custom-input {
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid #e2e8f0;
+            background-color: #fbfcfd;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+            .custom-input:focus {
+                background-color: #fff;
+                border-color: #ff7b2e;
+                box-shadow: 0 0 0 4px rgba(255, 123, 46, 0.1);
+                outline: none;
+            }
+
+        /* --- CÔTÉ PREVIEW --- */
+        .preview-panel {
+            background: #fbfcfd;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .image-edit-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .current-photo-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 40px;
+            object-fit: cover;
+            border: 6px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .upload-overlay {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            background: #ff7b2e;
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            border: 4px solid white;
+            transition: 0.3s;
+        }
+
+            .upload-overlay:hover {
+                transform: scale(1.1);
+                background: #1e293b;
+            }
+
+        /* --- BOUTONS --- */
+        .btn-save-now {
+            background: #1e293b;
+            color: white;
+            padding: 14px 35px;
+            border-radius: 15px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .btn-save-now:hover {
+                background: #ff7b2e;
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(255,123,46,0.2);
+            }
+
+        .btn-back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+            .btn-back-link:hover {
+                color: #ff7b2e;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link active" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container-fluid">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <a asp-action="Index" class="btn-back-link">
+                        <i class="fa-solid fa-chevron-left me-2"></i> Retour au personnel
+                    </a>
+                </div>
+
+                <div class="edit-card-master">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- CHAMPS CACHÉS (Corrigé : Ajout de Email) -->
+                        <input type="hidden" asp-for="IdEmploye" />
+                        <input type="hidden" asp-for="ImagePath" />
+                        <input type="hidden" asp-for="RestaurantId" />
+                        <input type="hidden" asp-for="Email" />
+
+                        <div class="edit-grid">
+                            <!-- PANNEAU GAUCHE : FORMULAIRE -->
+                            <div class="form-panel">
+                                <h2 class="fw-bold mb-5" style="color: #1e293b;">Modifier le <span class="text-orange-resto">Profil</span></h2>
+
+                                <div class="mb-4">
+                                    <label asp-for="Nom" class="form-label">Nom complet du collaborateur</label>
+                                    <input asp-for="Nom" class="form-control custom-input" placeholder="Ex: Jean Dupont" />
+                                    <span asp-validation-for="Nom" class="text-danger small"></span>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label asp-for="Poste" class="form-label">Rôle / Poste</label>
+                                        <select asp-for="Poste" class="form-select custom-input">
+                                            <option value="Chef Cuisinier">Chef Cuisinier</option>
+                                            <option value="Serveur">Serveur</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="Horaire" class="form-label">Date & Heure de début</label>
+                                        <input asp-for="Horaire" type="datetime-local" class="form-control custom-input" />
+                                    </div>
+                                </div>
+
+                                <div class="mt-5 d-flex align-items-center justify-content-between">
+                                    <button type="submit" class="btn-save-now shadow-sm">
+                                        <i class="fa-solid fa-floppy-disk me-2"></i> Appliquer les changements
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- PANNEAU DROITE : VISUEL -->
+                            <div class="preview-panel">
+                                <div class="image-edit-wrapper">
+                                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                                    {
+                                        <img src="~/images/employes/@Model.ImagePath" id="imgPreview" class="current-photo-circle" />
+                                    }
+                                    else
+                                    {
+                                        <div id="placeholderPreview" class="current-photo-circle bg-orange-light text-orange-resto d-flex align-items-center justify-content-center fw-bold" style="font-size: 3rem;">
+                                            @(Model.Nom != null ? Model.Nom.Substring(0, 1).ToUpper() : "?")
+                                        </div>
+                                    }
+                                    <label for="fileUpload" class="upload-overlay">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </label>
+                                    <input type="file" name="imageFile" id="fileUpload" style="display:none;" accept="image/*" onchange="previewImage(event)" />
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">Aperçu du profil</h5>
+                                <p class="text-muted small">Cliquez sur l'icône caméra pour changer la photo.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        <script>
+            function previewImage(event) {
+                var reader = new FileReader();
+                reader.onload = function(){
+                    var output = document.getElementById('imgPreview');
+                    if(!output) {
+                        var placeholder = document.getElementById('placeholderPreview');
+                        if(placeholder) placeholder.style.display = 'none';
+                        var newImg = document.createElement('img');
+                        newImg.id = 'imgPreview';
+                        newImg.className = 'current-photo-circle';
+                        var container = document.querySelector('.image-edit-wrapper');
+                        container.insertBefore(newImg, container.firstChild);
+                        output = newImg;
+                    }
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        </script>
+    }
+</body>
+</html>

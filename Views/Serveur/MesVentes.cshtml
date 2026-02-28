@@ -1,0 +1,371 @@
+﻿@model IEnumerable<RestaurantManager.Models.Vente>
+@{
+    Layout = null;
+    var totalVentes = Model.Sum(v => v.MontantTotal);
+    var nbVentes = Model.Count();
+    var ventesAujourdhui = Model.Where(v => v.DateVente.Date == DateTime.Today).Sum(v => v.MontantTotal);
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mes Ventes | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: #475569;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR (Identique à l'Index) */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 12px 20px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 15px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: var(--primary-orange);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+                }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        /* STAT CARDS (Style avec Watermark) */
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .watermark {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+            z-index: 1;
+        }
+
+        .bg-orange-light {
+            background: #fff7ed;
+            color: var(--primary-orange);
+        }
+
+        .bg-green-light {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+
+        .bg-blue-light {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        /* HEADER PROFILE */
+        .profile-badge {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-orange);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* TABLES & CARDS */
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .btn-export-custom {
+            background-color: white;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 8px 20px;
+            transition: 0.3s;
+        }
+
+            .btn-export-custom:hover {
+                background-color: var(--primary-orange);
+                color: white;
+                border-color: var(--primary-orange);
+            }
+
+        .badge-type {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .type-place {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .type-emporter {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .btn-facture {
+            background: #f1f5f9;
+            color: var(--dark-blue);
+            border: none;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+            .btn-facture:hover {
+                background: var(--dark-blue);
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link" asp-action="Index"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a class="nav-link" asp-action="PrendreCommande"><i class="fa-solid fa-plus-circle"></i> Prendre Commande</a>
+                <a class="nav-link" asp-action="ListeReservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" asp-action="MesTaches"><i class="fa-solid fa-list-check"></i> Mes Tâches</a>
+                <a class="nav-link active" asp-action="MesVentes"><i class="fa-solid fa-receipt"></i> Mes Ventes</a>
+
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: auto; padding-bottom: 20px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 text-danger w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-0">Mes <span class="text-orange-resto">Performances</span></h2>
+                    <small class="text-muted">Historique de vos ventes et encaissements</small>
+                </div>
+
+                <div class="profile-badge d-flex align-items-center">
+                    <div class="me-3 text-end d-none d-sm-block">
+                        <div class="fw-bold small">@User.Identity.Name</div>
+                        <small class="text-muted" style="font-size: 0.7rem;">Serveur</small>
+                    </div>
+                    <div class="avatar-circle">S</div>
+                </div>
+            </div>
+
+            <!-- STATS (Style avec Watermark) -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-blue-light"><i class="fa-solid fa-wallet"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Total encaissé</h6>
+                        <h3 class="fw-bold mb-0">@totalVentes.ToString("N2") DH</h3>
+                        <i class="fa-solid fa-wallet watermark"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-green-light"><i class="fa-solid fa-calendar-day"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Ventes aujourd'hui</h6>
+                        <h3 class="fw-bold mb-0">@ventesAujourdhui.ToString("N2") DH</h3>
+                        <i class="fa-solid fa-calendar-day watermark"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-orange-light"><i class="fa-solid fa-utensils"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Nombre de services</h6>
+                        <h3 class="fw-bold mb-0">@nbVentes</h3>
+                        <i class="fa-solid fa-utensils watermark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-list me-2 text-orange-resto"></i>Transactions récentes</h5>
+                    <button onclick="exportVentesCSV()" class="btn btn-export-custom">
+                        <i class="fa-solid fa-download me-2"></i>Exporter CSV
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table" id="ventesTableServer">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0">Date & Heure</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Montant Brut</th>
+                                <th class="border-0">Remise</th>
+                                <th class="border-0">Total Payé</th>
+                                <th class="border-0 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var v in Model)
+                            {
+                                <tr>
+                                    <td class="align-middle">
+                                        <div class="fw-bold">@v.DateVente.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">@v.DateVente.ToString("HH:mm")</small>
+                                    </td>
+                                    <td class="align-middle">
+                                        @if (v.Commande?.TypeCommande == "Sur place")
+                                        {
+                                            <span class="badge-type type-place">🍽️ SUR PLACE</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-type type-emporter">🥡 EMPORTER</span>
+                                        }
+                                    </td>
+                                    <td class="align-middle text-muted">@v.MontantBrut.ToString("N2") DH</td>
+                                    <td class="align-middle">
+                                        @if (v.Remise > 0)
+                                        {
+                                            <span class="text-danger fw-bold">-@v.Remise.ToString("N2") DH</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="fw-bold text-success">@v.MontantTotal.ToString("N2") DH</span>
+                                    </td>
+                                    <td class="align-middle text-end">
+                                        <a asp-action="VoirFacture" asp-route-id="@(v.Facture?.IdFacture ?? v.IdVente)" class="btn btn-facture">
+                                            <i class="fa-solid fa-eye me-1"></i> Facture
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportVentesCSV() {
+            var csv = [];
+            var rows = document.querySelectorAll("#ventesTableServer tr");
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+                for (var j = 0; j < cols.length - 1; j++) {
+                    var cleanText = cols[j].innerText.trim().replace(/\n/g, ' ');
+                    row.push('"' + cleanText + '"');
+                }
+                csv.push(row.join(","));
+            }
+            var csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+            var downloadLink = document.createElement("a");
+            downloadLink.download = "mes-ventes-fooddash.csv";
+            downloadLink.href = URL.createObjectURL(csvFile);
+            downloadLink.click();
+        }
+    </script>
+</body>
+</html>

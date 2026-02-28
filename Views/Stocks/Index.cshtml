@@ -1,0 +1,234 @@
+﻿@model IEnumerable<RestaurantManager.Models.Ingredient>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Gestion des Stocks | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-content {
+            padding: 40px !important;
+        }
+
+        .stock-progress {
+            height: 12px;
+            border-radius: 10px;
+            background-color: #f1f5f9;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-bar-orange {
+            background: linear-gradient(90deg, #ff7b2e, #ff9d66) !important;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar-danger {
+            background: linear-gradient(90deg, #ef4444, #f87171) !important;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .ingredient-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .ingredient-icon-placeholder {
+            width: 50px;
+            height: 50px;
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+
+        .adjust-input {
+            width: 80px !important;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+            .adjust-input:focus {
+                border-color: #ff7b2e;
+                background-color: #fff;
+                box-shadow: none;
+            }
+
+        /* Style spécifique pour le bouton View (Eye) */
+        .btn-view {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+
+            .btn-view:hover {
+                background: #22c55e;
+                color: white;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link active" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Inventaire du <span class="text-orange-resto">Stock</span></h2>
+                    <p class="text-muted small">Suivi des ingrédients et consommations.</p>
+                </div>
+                <a asp-action="Create" class="btn btn-orange shadow-sm px-4 py-2">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Ajouter au stock
+                </a>
+            </div>
+
+            <div class="table-card bg-white p-4 rounded-4 shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="small text-uppercase text-muted">
+                            <tr>
+                                <th class="border-0 ps-4">Ingrédient</th>
+                                <th class="border-0">Quantité / Unité</th>
+                                <th class="border-0" style="width: 20%;">Niveau</th>
+                                <th class="border-0">État</th>
+                                <th class="border-0">Ajustement rapide</th>
+                                <th class="border-0 text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var isLow = item.QuantiteDisponible <= item.SeuilAlerte;
+                                float maxCap = item.SeuilAlerte * 3;
+                                float percentage = (item.QuantiteDisponible / maxCap) * 100;
+                                if (percentage > 100) percentage = 100;
+                                if (percentage < 5 && item.QuantiteDisponible > 0) percentage = 8;
+
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                                {
+                                                    <img src="~/images/ingredients/@item.ImagePath" class="ingredient-img" alt="@item.Nom" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="ingredient-icon-placeholder"><i class="fa-solid fa-box"></i></div>
+                                                }
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">@item.Nom</div>
+                                                <small class="text-muted">Alerte : @item.SeuilAlerte @item.Unite</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="h6 fw-bold mb-0">@item.QuantiteDisponible</span>
+                                        <span class="text-muted small">@item.Unite</span>
+                                    </td>
+                                    <td>
+                                        <div class="stock-progress">
+                                            <div class="@(isLow ? "progress-bar-danger" : "progress-bar-orange")"
+                                                 style="width: @((int)percentage)%;"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (isLow)
+                                        {
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">Critique</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">En stock</span>
+                                        }
+                                    </td>
+
+                                    <td style="width: 200px;">
+                                        <form asp-action="AjusterStock" method="post" class="d-flex gap-2">
+                                            <input type="hidden" name="id" value="@item.IdIngredient" />
+                                            <input type="number" name="quantite" step="0.1" class="form-control form-control-sm rounded-3 adjust-input" placeholder="+ / -" />
+                                            <button type="submit" class="btn btn-sm btn-dark rounded-3 px-3">
+                                                <i class="fa-solid fa-sync"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <!-- BOUTON EYE (DETAILS) AJOUTÉ ICI -->
+                                            <a asp-action="Details" asp-route-id="@item.IdIngredient" class="circle-btn btn-view shadow-sm" title="Détails">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+
+                                            <a asp-action="Edit" asp-route-id="@item.IdIngredient" class="circle-btn btn-edit shadow-sm" title="Modifier">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.IdIngredient" class="circle-btn btn-delete shadow-sm" title="Supprimer">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.options = { "positionClass": "toast-top-right", "progressBar": true };
+            toastr.success('@TempData["Success"]');
+        </script>
+    }
+</body>
+</html>

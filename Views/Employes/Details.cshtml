@@ -1,0 +1,319 @@
+﻿@model RestaurantManager.Models.Employe
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Personnel | @Model.Nom</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-content {
+            padding: 40px !important;
+        }
+
+        /* --- BENTO GRID --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .bento-card {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .card-identity {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-avatar-big {
+            width: 130px;
+            height: 130px;
+            border-radius: 30px;
+            object-fit: cover;
+            margin-right: 35px;
+            background: #fff5ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #ff7b2e;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(255,123,46,0.15);
+        }
+
+        /* --- SECTION TACHES (SUIVI EN TEMPS RÉEL) --- */
+        .card-tasks {
+            grid-column: span 3;
+        }
+
+        .task-row {
+            background: #fbfcfd;
+            border-radius: 22px;
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f5f9;
+            transition: 0.3s ease;
+            border-left: 6px solid #cbd5e1; /* Par défaut : À faire */
+        }
+
+        /* États dynamiques */
+        .status-encours {
+            border-left-color: #ffb020 !important;
+            background-color: #fffbeb;
+        }
+
+        .status-termine {
+            border-left-color: #22c55e !important;
+            background-color: #f0fdf4;
+            opacity: 0.8;
+        }
+
+        .task-completed-text {
+            text-decoration: line-through;
+            color: #94a3b8 !important;
+        }
+
+        .badge-status {
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* --- BOUTONS & ACTIONS --- */
+        .btn-add-modern {
+            background: #1e293b;
+            color: white;
+            border-radius: 16px;
+            padding: 12px 28px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+            .btn-add-modern:hover {
+                background: #ff7b2e;
+                color: white;
+                transform: translateY(-3px);
+            }
+
+        .action-link {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        .link-success {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+
+        .link-edit {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .link-delete {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link active" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a asp-action="Index" class="text-muted text-decoration-none fw-medium small">
+                    <i class="fa-solid fa-chevron-left me-2"></i> Retour au personnel
+                </a>
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.IdEmploye" class="action-link link-edit" title="Modifier l'employé"><i class="fa-solid fa-user-pen"></i></a>
+                    <a asp-action="Delete" asp-route-id="@Model.IdEmploye" class="action-link link-delete" title="Supprimer l'employé"><i class="fa-solid fa-user-minus"></i></a>
+                </div>
+            </div>
+
+            <div class="bento-grid">
+                <!-- 1. IDENTITÉ -->
+                <div class="bento-card card-identity">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="~/images/employes/@Model.ImagePath" class="profile-avatar-big" />
+                    }
+                    else
+                    {
+                        <div class="profile-avatar-big">@Model.Nom.Substring(0, 1).ToUpper()</div>
+                    }
+                    <div>
+                        <span class="text-orange-resto fw-bold small text-uppercase" style="letter-spacing: 2px;">Collaborateur</span>
+                        <h1 class="fw-bold text-dark mb-2" style="font-size: 2.5rem;">@Model.Nom</h1>
+                        <div class="d-flex align-items-center">
+                            <span class="status-dot"></span>
+                            <span class="text-muted fw-medium">Actuellement en service</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. INFOS CLÉS -->
+                <div class="bento-card card-info">
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-briefcase"></i></div>
+                        <div>
+                            <div class="text-muted small">Poste</div>
+                            <div class="fw-bold text-dark">@Model.Poste</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                        <div>
+                            <div class="text-muted small">Horaire de début</div>
+                            <div class="fw-bold text-dark">
+                                @(!string.IsNullOrEmpty(Model.Horaire) ? DateTime.Parse(Model.Horaire).ToString("dd MMM yyyy à HH:mm") : "Non défini")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. GESTION DES TACHES (MISE À JOUR) -->
+                <div class="bento-card card-tasks">
+                    <div class="d-flex justify-content-between align-items-center mb-5">
+                        <h3 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-3 text-orange-resto"></i>Feuille de route</h3>
+                        <a href="/Taches/Create?employeId=@Model.IdEmploye" class="btn-add-modern">
+                            <i class="fa-solid fa-plus me-2"></i> Nouvelle mission
+                        </a>
+                    </div>
+
+                    @if (Model.Taches != null && Model.Taches.Any())
+                    {
+                        @foreach (var tache in Model.Taches.OrderByDescending(t => t.DateDebut))
+                        {
+                            // Calcul des styles dynamiques
+                            string statusRowClass = "";
+                            string iconStatus = "fa-thumbtack text-orange-resto";
+                            string badgeColor = "bg-secondary";
+                            string labelText = "À faire";
+
+                            if (tache.Statut == "En cours")
+                            {
+                                statusRowClass = "status-encours";
+                                iconStatus = "fa-spinner fa-spin text-warning";
+                                badgeColor = "bg-warning text-dark";
+                                labelText = "En cours";
+                            }
+                            else if (tache.Statut == "Terminé" || tache.Statut == "Terminée")
+                            {
+                                statusRowClass = "status-termine";
+                                iconStatus = "fa-check-double text-success";
+                                badgeColor = "bg-success text-white";
+                                labelText = "Terminé";
+                            }
+
+                            <div class="task-row @statusRowClass">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-white shadow-sm rounded-3 p-3 me-4 border">
+                                        <i class="fa-solid @iconStatus"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark mb-1 @(tache.Statut?.Contains("Termin") == true ? "task-completed-text" : "")">
+                                            @tache.Description
+                                        </div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <small class="text-muted">
+                                                <i class="fa-regular fa-clock me-1"></i> Échéance : @tache.DateFin.ToString("dd MMM à HH:mm")
+                                            </small>
+                                            <span class="badge-status @badgeColor">@labelText</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    @* Bouton pour valider manuellement côté admin *@
+                                    @if (tache.Statut != "Terminé" && tache.Statut != "Terminée")
+                                    {
+                                        <form asp-controller="Taches" asp-action="ToggleComplete" asp-route-id="@tache.IdTache" method="post">
+                                            <button type="submit" class="action-link link-success border-0" title="Valider">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <a href="/Taches/Edit/@tache.IdTache" class="action-link link-edit" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></a>
+
+                                    <form asp-controller="Taches" asp-action="Delete" asp-route-id="@tache.IdTache" method="post" onsubmit="return confirm('Supprimer cette mission ?')">
+                                        <button type="submit" class="action-link link-delete border-0" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="opacity-25 mb-3"><i class="fa-solid fa-clipboard-list fa-4x"></i></div>
+                            <h5 class="text-muted fw-bold">Aucune mission assignée</h5>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

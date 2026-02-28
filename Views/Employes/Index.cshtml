@@ -1,0 +1,145 @@
+﻿@model IEnumerable<RestaurantManager.Models.Employe>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personnel - Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link active" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations">
+                    <i class="fa-solid fa-calendar-check"></i> Réservations
+                </a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Gestion du <span class="text-orange-resto">Personnel</span></h2>
+                    <p class="text-muted small">Suivi des rôles et plannings de l'équipe</p>
+                </div>
+                <a asp-action="Create" class="btn btn-orange shadow-sm px-4 py-2">
+                    <i class="fa-solid fa-user-plus me-2"></i> Ajouter un employé
+                </a>
+            </div>
+
+            <div class="table-card bg-white p-4 rounded-4 shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="small text-uppercase text-muted">
+                            <tr>
+                                <th class="border-0 ps-4">Employé</th>
+                                <th class="border-0">Poste</th>
+                                <th class="border-0">Horaire de début</th>
+                                <th class="border-0">Missions</th>
+                                <th class="border-0 text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <!-- LOGIQUE PHOTO OU INITIALE -->
+                                            <div class="me-3">
+                                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                                {
+                                                    <img src="~/images/employes/@item.ImagePath"
+                                                         class="rounded-circle shadow-sm"
+                                                         style="width:45px; height:45px; object-fit: cover; border: 2px solid #fff;"
+                                                         asp-append-version="true" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-orange-light text-orange-resto rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                                         style="width:45px; height:45px; border: 2px solid #fff;">
+                                                        @item.Nom.Substring(0, 1).ToUpper()
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="fw-bold text-dark">@item.Nom</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var color = item.Poste.ToLower().Contains("chef") ? "danger" : "primary";
+                                        }
+                                        <span class="badge bg-@color-subtle text-@color px-3 py-2 rounded-pill">@item.Poste</span>
+                                    </td>
+                                    <td class="text-muted small fw-medium">
+                                        <i class="fa-regular fa-clock me-1 text-orange-resto"></i>
+                                        <!-- CORRECTION : Espace entre Date et Heure -->
+                                        @item.Horaire.Replace("T", " ")
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border px-3">@(item.Taches?.Count ?? 0) tâches</span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a asp-action="Details" asp-route-id="@item.IdEmploye" class="circle-btn btn-view" title="Voir détails">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.IdEmploye" class="circle-btn btn-edit" title="Modifier">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.IdEmploye" class="circle-btn btn-delete" title="Supprimer">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>toastr.success('@TempData["Success"]');</script>
+    }
+    @if (TempData["DeleteSuccess"] != null)
+    {
+        <script>
+            toastr.options = { "progressBar": true, "closeButton": true };
+            toastr.error('@TempData["DeleteSuccess"]', 'Suppression');
+        </script>
+    }
+</body>
+</html>

@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Admin - Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Food Dash <span style="color:var(--primary-orange)">PRO</span></h3>
+            </div>
+            <ul class="list-unstyled components">
+                <li class="active"><a href="/Gerant"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
+                <li><a href="/Plats"><i class="fas fa-utensils me-2"></i> Menu & Plats</a></li>
+                <li><a href="/Employes"><i class="fas fa-users me-2"></i> Personnel</a></li>
+                <li><a href="/Stocks"><i class="fas fa-boxes me-2"></i> Stocks</a></li>
+                <li><a href="/Ventes"><i class="fas fa-shopping-cart me-2"></i> Ventes</a></li>
+                <li><a href="/Reservations"><i class="fas fa-calendar-alt me-2"></i> Réservations</a></li>
+                <li class="mt-5"><a href="/"><i class="fas fa-eye me-2"></i> Voir le Site</a></li>
+            </ul>
+        </nav>
+
+        <!-- Contenu Principal -->
+        <div class="admin-content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4" style="border-radius: 15px;">
+                <div class="container-fluid">
+                    <span class="navbar-text fw-bold">Espace Gérant</span>
+                    <div class="ms-auto">
+                        <partial name="_LoginPartial" />
+                    </div>
+                </div>
+            </nav>
+            @RenderBody()
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+﻿@model RestaurantManager.Models.Plat
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supprimer Plat - Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* --- CONFIGURATION SIDEBAR (DÉCONNEXION EN BAS) --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+            .sidebar .nav {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1; /* Pousse le contenu suivant vers le bas */
+            }
+
+        .logout-section {
+            margin-top: auto; /* Pousse la section de déconnexion tout en bas */
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-logout {
+            color: #dc3545 !important; /* Rouge */
+            font-weight: 600;
+            transition: all 0.2s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+            .btn-logout:hover {
+                background-color: #fff5f5 !important;
+                color: #a52834 !important;
+            }
+
+        /* --- STYLES DE LA PAGE SUPPRIMER --- */
+        .main-content {
+            background-color: #f4f7fa;
+        }
+
+        .delete-container {
+            max-width: 600px;
+            margin: 80px auto;
+        }
+
+        .delete-card {
+            background: white;
+            border-radius: 30px;
+            border: 1px solid #fee2e2;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            overflow: visible;
+            text-align: center;
+            position: relative;
+        }
+
+        .delete-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid #f4f7fa; /* Couleur du fond de la page */
+            font-size: 2rem;
+            z-index: 10;
+        }
+
+        .delete-content-padding {
+            padding-top: 50px;
+        }
+
+        .dish-preview {
+            padding: 25px;
+            background: #fafbfc;
+            border-radius: 20px;
+            margin: 20px 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+            border: 1px solid #f1f5f9;
+        }
+
+            .dish-preview img {
+                width: 70px;
+                height: 70px;
+                border-radius: 12px;
+                object-fit: cover;
+            }
+
+        .warning-text {
+            padding: 0 40px;
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .delete-footer {
+            padding: 0 40px 40px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-confirm-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+            .btn-confirm-delete:hover {
+                background: #dc2626;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+                color: white;
+            }
+
+        .btn-cancel {
+            background: transparent;
+            color: #94a3b8;
+            padding: 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+            .btn-cancel:hover {
+                color: #1e293b;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+                <a class="nav-link active" href="/Plats"><i class="fa-solid fa-burger me-2"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users me-2"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check me-2"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box me-2"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line me-2"></i> Ventes</a>
+
+                <!-- SECTION DÉCONNEXION EN BAS -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content d-flex align-items-center justify-content-center">
+            <div class="delete-container">
+                <div class="delete-card">
+                    <!-- Icone Flottante -->
+                    <div class="delete-icon-wrapper">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+
+                    <div class="delete-content-padding">
+                        <h2 class="fw-bold mt-3 px-4">Supprimer ce plat ?</h2>
+
+                        <div class="warning-text">
+                            Attention, cette action est irréversible. Toutes les données liées à ce plat seront définitivement effacées du menu.
+                        </div>
+
+                        <div class="dish-preview">
+                            @if (!string.IsNullOrEmpty(Model.ImagePath))
+                            {
+                                <img src="~/images/plats/@Model.ImagePath" alt="@Model.Nom" />
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center rounded-3" style="width:70px; height:70px">
+                                    <i class="fa-solid fa-image text-muted"></i>
+                                </div>
+                            }
+                            <div>
+                                <div class="fw-bold text-dark" style="font-size: 1.1rem;">@Model.Nom</div>
+                                <div class="text-orange-resto fw-bold">@Model.Prix.ToString("N2") DH</div>
+                            </div>
+                        </div>
+
+                        <div class="delete-footer">
+                            <form asp-action="Delete">
+                                <input type="hidden" asp-for="IdPlat" />
+                                <button type="submit" class="btn-confirm-delete w-100">
+                                    <i class="fa-solid fa-circle-exclamation me-2"></i> Confirmer la suppression
+                                </button>
+                            </form>
+                            <a asp-action="Index" class="btn-cancel">Annuler et revenir</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

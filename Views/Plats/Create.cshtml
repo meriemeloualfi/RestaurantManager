@@ -1,0 +1,170 @@
+﻿@model RestaurantManager.Models.Plat
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajouter un Plat - Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Importation de Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* --- CONFIGURATION SIDEBAR (DÉCONNEXION EN BAS) --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+            .sidebar .nav {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1; /* Remplit l'espace pour pousser le bouton vers le bas */
+            }
+
+        .logout-section {
+            margin-top: auto; /* Pousse la section vers le bas */
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-logout {
+            color: #dc3545 !important; /* Rouge Bootstrap */
+            font-weight: 600;
+            transition: all 0.2s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+            .btn-logout:hover {
+                background-color: #fff5f5 !important;
+                color: #a52834 !important;
+            }
+
+        /* --- STYLES DU FORMULAIRE --- */
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .bg-orange-light {
+            background-color: rgba(255, 123, 46, 0.1);
+        }
+
+        .border-dashed {
+            border-style: dashed !important;
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+                <a class="nav-link active" href="/Plats"><i class="fa-solid fa-burger me-2"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users me-2"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check me-2"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box me-2"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line me-2"></i> Ventes</a>
+
+                <!-- SECTION DÉCONNEXION EN BAS -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container py-4">
+                <!-- Bouton Retour Rapide -->
+                <div class="mb-4">
+                    <a asp-action="Index" class="text-decoration-none text-muted small fw-bold">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Retour au catalogue
+                    </a>
+                </div>
+
+                <div class="form-container bg-white shadow-sm rounded-4 p-5 mx-auto" style="max-width: 900px;">
+                    <div class="text-center mb-5">
+                        <div class="icon-circle bg-orange-light mx-auto mb-3">
+                            <i class="fa-solid fa-utensils fa-lg text-orange-resto"></i>
+                        </div>
+                        <h2 class="fw-bold">Ajouter un <span class="text-orange-resto">Nouveau Plat</span></h2>
+                        <p class="text-muted">Remplissez les informations ci-dessous pour le menu</p>
+                    </div>
+
+                    <form asp-action="Create" enctype="multipart/form-data">
+                        <div class="row g-4">
+                            <!-- Nom du Plat -->
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Nom du plat</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-tag text-muted"></i></span>
+                                    <input asp-for="Nom" class="form-control bg-light border-start-0 ps-0" placeholder="Ex: Pizza Royale" required />
+                                </div>
+                            </div>
+
+                            <!-- Prix -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Prix (DH)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-coins text-muted"></i></span>
+                                    <input asp-for="Prix" class="form-control bg-light border-start-0 ps-0" type="number" step="0.01" placeholder="0.00" required />
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Description du plat</label>
+                                <textarea asp-for="Description" class="form-control bg-light" rows="4" placeholder="Ingrédients, préparation..."></textarea>
+                            </div>
+
+                            <!-- Upload Photo -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Photo du plat</label>
+                                <div class="upload-box border rounded-3 p-4 text-center bg-light border-2 border-dashed">
+                                    <i class="fa-solid fa-cloud-arrow-up fa-2x text-muted mb-3"></i>
+                                    <input type="file" name="imageFile" class="form-control" accept="image/*" id="imageInput" />
+                                    <small class="text-muted d-block mt-2">Format suggéré : PNG, JPG ou WEBP (Max 2Mo)</small>
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="col-12 mt-5">
+                                <div class="d-flex gap-3 justify-content-center">
+                                    <button type="submit" class="btn btn-orange px-5 py-3 shadow-lg">
+                                        <i class="fa-solid fa-check-circle me-2"></i> Créer le plat
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-light px-5 py-3 border">
+                                        Annuler
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

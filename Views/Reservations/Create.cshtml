@@ -1,0 +1,258 @@
+﻿@model RestaurantManager.Models.Reservation
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saisie Réservation | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-content {
+            padding: 40px !important;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            overflow: hidden;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        .form-side {
+            padding: 50px;
+        }
+
+            .form-side h2 {
+                font-weight: 800;
+                color: #0f172a;
+                margin-bottom: 30px;
+            }
+
+        .label-pro {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .input-wrapper i {
+                position: absolute;
+                left: 20px;
+                color: #ff7b2e;
+            }
+
+        .form-control-pro {
+            width: 100%;
+            padding: 14px 15px 14px 55px;
+            border-radius: 15px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+            .form-control-pro:focus {
+                border-color: #ff7b2e;
+                background: white;
+                outline: none;
+                box-shadow: 0 10px 25px rgba(255, 123, 46, 0.08);
+            }
+
+        .summary-side {
+            background: #1e293b;
+            padding: 50px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .summary-circle {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 123, 46, 0.1);
+            color: #ff7b2e;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+        }
+
+        .btn-reserve-pro {
+            background: #ff7b2e;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 18px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(255, 123, 46, 0.2);
+        }
+
+            .btn-reserve-pro:hover {
+                background: #e66a22; /* Orange foncé au hover */
+                transform: translateY(-4px);
+                box-shadow: 0 15px 30px rgba(230, 106, 34, 0.3);
+                color: white;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link active" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="mb-4">
+                <a asp-action="Index" class="text-muted text-decoration-none fw-bold small">
+                    <i class="fa-solid fa-arrow-left-long me-2"></i> RETOUR AU PLANNING
+                </a>
+            </div>
+
+            <div class="booking-card">
+                <div class="form-side">
+                    <h2>Enregistrer une <span class="text-orange-resto">Table</span></h2>
+
+                    <form asp-action="Create">
+                        <!-- NOM CLIENT -->
+                        <div class="input-block">
+                            <label class="label-pro">Nom du Client</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user-pen"></i>
+                                <input asp-for="NomClient" class="form-control-pro" placeholder="Ex: Mme. Idrissi" required />
+                            </div>
+                        </div>
+
+                        <!-- DATE ET HEURE -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="label-pro">Date du repas</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-calendar-day"></i>
+                                    <input asp-for="DateReservation" type="date" class="form-control-pro" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label-pro">Heure d'arrivée</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-clock"></i>
+                                    <input asp-for="Heure" type="time" class="form-control-pro" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COUVERTS ET TABLE -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="label-pro">Couverts (Pers.)</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input asp-for="NbPersonnes" type="number" class="form-control-pro" placeholder="Ex: 4" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label-pro">Table assignée</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-chair"></i>
+                                    <input asp-for="NumeroTable" class="form-control-pro" placeholder="Ex: Table 05" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ÉTAT (RÉTABLI) -->
+                        <div class="input-block">
+                            <label class="label-pro">État de la réservation</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-tag"></i>
+                                <select asp-for="Statut" class="form-control-pro">
+                                    <option value="Confirmée">Confirmée</option>
+                                    <option value="En attente">En attente</option>
+                                    <option value="En attente">Annulée</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- NOTES -->
+                        <div class="input-block">
+                            <label class="label-pro">Notes de service</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-comment-dots" style="top: 18px;"></i>
+                                <textarea asp-for="Remarques" class="form-control-pro" rows="2" style="padding-left: 55px;" placeholder="Détails importants..."></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-reserve-pro">
+                            <i class="fa-solid fa-check-circle me-2"></i> Confirmer le placement
+                        </button>
+                    </form>
+                </div>
+
+                <div class="summary-side">
+                    <!-- ICÔNE FOURCHETTE ET COUTEAU RÉTABLIE -->
+                    <div class="summary-circle">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">Gestion des Tables</h3>
+                    <p class="text-white-50 small mb-5">
+                        Une organisation précise des tables garantit un service fluide et une meilleure expérience client. Vérifiez la salle avant de confirmer.
+                    </p>
+                    <div class="text-start bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10">
+                        <div class="mb-3 small"><i class="fa-solid fa-circle-check text-success me-2"></i> Placement optimisé</div>
+                        <div class="mb-3 small"><i class="fa-solid fa-circle-check text-success me-2"></i> Éviter les sur-réservations</div>
+                        <div class="small"><i class="fa-solid fa-circle-check text-success me-2"></i> Accueil client facilité</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

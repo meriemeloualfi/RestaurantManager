@@ -1,0 +1,308 @@
+﻿@model IEnumerable<RestaurantManager.Models.Reservation>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planning Pro - Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-content {
+            padding: 40px !important;
+        }
+
+        /* --- STAT CARDS --- */
+        .stat-banner {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .mini-stat {
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(0,0,0,0.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .icon-box-res {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        /* --- TIMELINE LIST --- */
+        .timeline-wrapper {
+            position: relative;
+            padding-left: 20px;
+        }
+
+            .timeline-wrapper::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 2px;
+                background: #e2e8f0;
+            }
+
+        .reservation-item {
+            position: relative;
+            background: white;
+            border-radius: 24px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            margin-left: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s ease;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+            .reservation-item::before {
+                content: '';
+                position: absolute;
+                left: -41px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 20px;
+                height: 20px;
+                background: white;
+                border: 4px solid var(--primary-orange);
+                border-radius: 50%;
+                z-index: 1;
+            }
+
+            .reservation-item:hover {
+                transform: translateX(10px);
+                border-color: #ffe8d9;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            }
+
+        .time-tag {
+            background: #1e293b;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .client-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .guest-pill {
+            background: #fff5ed;
+            color: #ff7b2e;
+            padding: 8px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .table-badge {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .note-bubble {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            color: #64748b;
+            max-width: 250px;
+            border-left: 3px solid #cbd5e1;
+        }
+
+        .btn-modern-add {
+            background: var(--primary-orange);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 16px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+        }
+
+            .btn-modern-add:hover {
+                background-color: #e66a22 !important;
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(230, 106, 34, 0.3);
+                color: white !important;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link active" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Planning des <span class="text-orange-resto">Tables</span></h2>
+                    <p class="text-muted">Aujourd'hui, vous avez @Model.Count() réservations</p>
+                </div>
+                <a asp-action="Create" class="btn btn-modern-add shadow-sm">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Nouvelle Réservation
+                </a>
+            </div>
+
+            <!-- BENTO STATS -->
+            <div class="stat-banner">
+                <div class="mini-stat">
+                    <div class="icon-box-res" style="background: #fff5ed; color: #ff7b2e;">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Réservations</small>
+                        <span class="h4 fw-bold">@Model.Count()</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <div class="icon-box-res" style="background: #f0fdf4; color: #22c55e;">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Couverts Prévus</small>
+                        <span class="h4 fw-bold">@Model.Sum(r => r.NbPersonnes)</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <div class="icon-box-res" style="background: #eff6ff; color: #3b82f6;">
+                        <i class="fa-solid fa-chair"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Tables Occupées</small>
+                        <span class="h4 fw-bold">@Model.Select(r => r.NumeroTable).Distinct().Count()</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE -->
+            <div class="timeline-wrapper">
+                @foreach (var item in Model.OrderBy(r => r.Heure))
+                {
+                    <div class="reservation-item">
+                        <div class="d-flex align-items-center">
+                            <!-- HEURE -->
+                            <div class="text-center me-5" style="min-width: 80px;">
+                                <span class="time-tag">@item.Heure</span>
+                                <div class="small text-muted fw-bold">@item.DateReservation.ToString("dd MMM")</div>
+                            </div>
+
+                            <!-- CLIENT & TABLE -->
+                            <div class="me-5">
+                                <h4 class="client-name">@item.NomClient</h4>
+                                <div class="d-flex align-items-center mt-1">
+                                    <!-- BADGE TABLE AJOUTÉ ICI -->
+                                    <span class="table-badge me-2">
+                                        <i class="fa-solid fa-chair me-1"></i> @item.NumeroTable
+                                    </span>
+
+                                    @{
+                                        var statusClass = item.Statut == "Annulée" ? "bg-danger" : "bg-success";
+                                    }
+                                    <span class="badge rounded-pill @statusClass me-2" style="font-size: 0.6rem;">● @item.Statut.ToUpper()</span>
+                                </div>
+                            </div>
+
+                            <!-- NOTE -->
+                            <div class="note-bubble d-none d-xl-block">
+                                <i class="fa-solid fa-comment-dots me-2"></i>
+                                @(string.IsNullOrEmpty(item.Remarques) ? "Sans note" : item.Remarques)
+                            </div>
+                        </div>
+
+                        <!-- GUESTS & ACTIONS -->
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="guest-pill shadow-sm">
+                                <i class="fa-solid fa-users me-2"></i> @item.NbPersonnes <span class="small fw-normal">pers</span>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@item.IdReservation" class="circle-btn btn-view shadow-sm">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.IdReservation" class="circle-btn btn-edit shadow-sm">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.IdReservation" class="circle-btn btn-delete shadow-sm">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.options = { "positionClass": "toast-top-right", "progressBar": true };
+            toastr.success('@TempData["Success"]');
+        </script>
+    }
+</body>
+</html>

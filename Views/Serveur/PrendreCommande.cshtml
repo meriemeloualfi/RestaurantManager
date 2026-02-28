@@ -1,0 +1,371 @@
+﻿@model IEnumerable<RestaurantManager.Models.Plat>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prendre Commande | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 12px 20px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 15px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: var(--primary-orange);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+                }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        /* MENU STYLE */
+        .plat-card {
+            border: none;
+            border-radius: 20px;
+            transition: 0.3s;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+            .plat-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .plat-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .price-badge {
+            background: #fff3eb;
+            color: var(--primary-orange);
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 10px;
+        }
+
+        /* PANIER STYLE */
+        .cart-container {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            position: sticky;
+            top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .cart-item {
+            border-bottom: 1px dashed #eee;
+            padding: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .btn-valider {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+            .btn-valider:hover {
+                background: #e66a22;
+                transform: scale(1.02);
+                color: white;
+            }
+
+        .search-bar {
+            max-width: 300px;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            padding: 8px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link" asp-action="Index"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a class="nav-link active" asp-action="PrendreCommande"><i class="fa-solid fa-plus-circle"></i> Prendre Commande</a>
+                <a class="nav-link" asp-action="ListeReservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" asp-action="MesTaches"><i class="fa-solid fa-list-check"></i> Mes Tâches</a>
+                <a class="nav-link" asp-action="MesVentes"><i class="fa-solid fa-receipt"></i> Mes Ventes</a>
+
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: auto; padding-bottom: 20px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 text-danger w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="fw-bold">Nouveau <span class="text-orange-resto">Service</span></h2>
+                        <input type="text" class="search-bar" placeholder="Rechercher un plat...">
+                    </div>
+
+                    <div class="row" style="max-height: 85vh; overflow-y: auto;">
+                        @foreach (var plat in Model)
+                        {
+                            <div class="col-md-6 mb-4">
+                                <div class="card plat-card p-3">
+                                    <!-- IMAGE DU PLAT -->
+                                    @if (!string.IsNullOrEmpty(plat.ImagePath))
+                                    {
+                                        <img src="~/images/plats/@plat.ImagePath" class="plat-img" alt="@plat.Nom">
+                                    }
+                                    else
+                                    {
+                                        <div class="plat-img bg-light d-flex align-items-center justify-content-center">
+                                            <i class="fa-solid fa-utensils fa-3x text-orange-resto opacity-25"></i>
+                                        </div>
+                                    }
+
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <h6 class="fw-bold mb-0">@plat.Nom</h6>
+                                        <span class="price-badge">@plat.Prix DH</span>
+                                    </div>
+                                    <p class="text-muted small">@plat.Description</p>
+
+                                    <input type="text" id="note-@plat.IdPlat" class="form-control form-control-sm mb-2 bg-light border-0" placeholder="Note (ex: Sans oignon)">
+                                    <button class="btn btn-dark btn-sm rounded-pill" onclick="ajouterAuPanier(@plat.IdPlat, '@plat.Nom', @plat.Prix.ToString().Replace(",", "."))">
+                                        + Ajouter au ticket
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Ticket / Panier -->
+                <div class="col-lg-4">
+                    <div class="cart-container">
+                        <h5 class="fw-bold mb-4"><i class="fa-solid fa-receipt me-2 text-orange-resto"></i> Détails Commande</h5>
+
+                        <div id="sectionTable" class="mb-3">
+                            <label class="small fw-bold text-muted mb-2">NUMÉRO DE TABLE</label>
+                            <input type="number" id="numTable" class="form-control border-0 bg-light rounded-3 fw-bold px-3 py-2" placeholder="N° Table">
+                        </div>
+
+                        <label class="small fw-bold text-muted mb-2">TYPE DE SERVICE</label>
+                        <select id="typeCommande" class="form-select mb-4 border-0 bg-light fw-bold" onchange="toggleTableInput()">
+                            <option value="Sur place">🍽️ Sur place</option>
+                            <option value="A emporter">🥡 À emporter</option>
+                        </select>
+
+                        <div id="listePanier" style="min-height: 120px; max-height: 300px; overflow-y: auto;">
+                            <p class="text-muted text-center py-4">Le ticket est vide</p>
+                        </div>
+
+                        <!-- CALCULS AVEC REMISE -->
+                        <div class="bg-light p-3 rounded-4 mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <small class="text-muted">Montant Brut</small>
+                                <span class="fw-bold"><span id="totalBrut">0</span> DH</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">Remise (DH)</small>
+                                <input type="number" id="remiseInput" class="form-control form-control-sm border-0 text-end fw-bold text-danger"
+                                       style="width: 80px; background: #fff;" value="0" oninput="refreshPanier()">
+                            </div>
+
+                            <hr style="border-top: 1px dashed #ccc;">
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Total Final</span>
+                                <span class="h3 fw-bold mb-0 text-orange-resto">
+                                    <span id="totalPrix">0</span> <small style="font-size:14px">DH</small>
+                                </span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-valider" onclick="validerTouteLaCommande()">
+                            VALIDER ET ENCAISSER
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let panier = [];
+
+        function toggleTableInput() {
+            const type = document.getElementById('typeCommande').value;
+            const section = document.getElementById('sectionTable');
+            if (type === "A emporter") {
+                section.style.display = "none";
+                document.getElementById('numTable').value = "";
+            } else {
+                section.style.display = "block";
+            }
+        }
+
+        function ajouterAuPanier(id, nom, prix) {
+            let noteSaisie = document.getElementById('note-' + id).value;
+            let articleExistant = panier.find(item => item.platId === id && item.note === noteSaisie);
+
+            if (articleExistant) {
+                articleExistant.qte++;
+            } else {
+                panier.push({ platId: id, nom: nom, prix: prix, qte: 1, note: noteSaisie });
+            }
+
+            document.getElementById('note-' + id).value = "";
+            refreshPanier();
+        }
+
+        function refreshPanier() {
+            let div = document.getElementById('listePanier');
+            let totalBrut = 0;
+            div.innerHTML = "";
+
+            if (panier.length === 0) {
+                div.innerHTML = '<p class="text-muted text-center py-4">Le ticket est vide</p>';
+            }
+
+            panier.forEach((item) => {
+                let sousTotal = item.prix * item.qte;
+                totalBrut += sousTotal;
+                div.innerHTML += `
+                    <div class="cart-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-orange-resto fw-bold">${item.qte}x</span>
+                            <span class="fw-bold">${item.nom}</span> <br>
+                            <small class="text-muted italic">${item.note ? '📝 ' + item.note : ''}</small>
+                        </div>
+                        <span class="fw-bold">${sousTotal.toFixed(2)} DH</span>
+                    </div>`;
+            });
+
+            // Calcul de la remise et du total final
+            let remise = parseFloat(document.getElementById('remiseInput').value) || 0;
+            let totalFinal = totalBrut - remise;
+            if (totalFinal < 0) totalFinal = 0;
+
+            document.getElementById('totalBrut').innerText = totalBrut.toFixed(2);
+            document.getElementById('totalPrix').innerText = totalFinal.toFixed(2);
+        }
+
+        async function validerTouteLaCommande() {
+            if (panier.length === 0) return alert("Le ticket est vide !");
+
+            const typeService = document.getElementById('typeCommande').value;
+            const tableVal = document.getElementById('numTable').value;
+            const remiseVal = parseFloat(document.getElementById('remiseInput').value) || 0;
+            const brutVal = parseFloat(document.getElementById('totalBrut').innerText);
+            const totalVal = parseFloat(document.getElementById('totalPrix').innerText);
+
+            if (typeService === "Sur place" && !tableVal) {
+                return alert("Veuillez saisir un numéro de table.");
+            }
+
+            let data = {
+                type: typeService,
+                numeroTable: tableVal ? parseInt(tableVal) : null,
+                montantBrut: brutVal,
+                remise: remiseVal,
+                montantTotal: totalVal,
+                articles: panier
+            };
+
+            try {
+                let response = await fetch('/Serveur/ValiderCommande', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                let result = await response.json();
+
+                if (result.success) {
+                    
+                    window.location.href = '/Serveur/VoirFacture/' + result.idFacture;
+                } else {
+                   
+                }
+            } catch (err) {
+                console.error(err);
+               
+            }
+        }
+    </script>
+
+</body>
+</html>

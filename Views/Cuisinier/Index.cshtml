@@ -1,0 +1,311 @@
+﻿@model ChefDashboardViewModel
+@{
+    Layout = null;
+    int totalTaches = Model.MesTaches.Count();
+    int totalAlertes = Model.IngredientsAlerte.Count();
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuisine | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+        }
+
+        /* --- STRUCTURE --- */
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px !important;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+            .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                background: var(--primary-orange);
+                color: white;
+                box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+            }
+
+        /* --- STAT CARDS (FORCÉ) --- */
+        .stat-card {
+            background: white !important;
+            padding: 25px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+            position: relative !important;
+            overflow: hidden !important; /* Coupe l'icône qui dépasse */
+            border: 1px solid rgba(0,0,0,0.05) !important;
+            display: block !important;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2; /* Reste au dessus */
+        }
+
+        /* L'icône de fond (Watermark) */
+        .watermark {
+            position: absolute !important;
+            right: -10px !important;
+            bottom: -20px !important;
+            font-size: 8rem !important; /* TRÈS GRAND */
+            opacity: 0.12 !important; /* PLUS VISIBLE */
+            transform: rotate(-15deg) !important;
+            color: var(--dark-blue) !important;
+            pointer-events: none !important;
+            z-index: 1 !important; /* Derrière le texte */
+            line-height: 1 !important;
+        }
+
+        .stat-card h6, .stat-card h3 {
+            position: relative !important;
+            z-index: 2 !important; /* Force le texte au premier plan */
+        }
+
+        /* Couleurs */
+        .bg-blue-light {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+
+        .bg-orange-light {
+            background-color: #fff7ed;
+            color: #ea580c;
+        }
+
+        .bg-red-light {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        .table-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .sidebar form .nav-link:hover {
+            background: transparent !important;
+            color: rgba(255,255,255,0.7) !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- SIDEBAR (IDENTIQUE À STOCK) -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link active" asp-controller="Cuisinier" asp-action="Index">
+                    <i class="fa-solid fa-fire-burner"></i> Dashboard
+                </a>
+                <a class="nav-link" asp-controller="Cuisinier" asp-action="Taches">
+                    <i class="fa-solid fa-list-check"></i> Mes Tâches
+                </a>
+                <a class="nav-link" asp-controller="Cuisinier" asp-action="Stock">
+                    <i class="fa-solid fa-boxes-stacked"></i> Stock
+                </a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <!-- CONTENU PRINCIPAL -->
+        <div class="main-content">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-0">Espace <span class="text-orange-resto">Cuisine</span></h2>
+                    <small class="text-muted">Bonjour Chef ! Voici vos priorités pour le service.</small>
+                </div>
+
+                <div class="bg-white p-2 rounded-4 shadow-sm border d-flex align-items-center px-3">
+                    <div class="me-3 text-end">
+                        <div class="fw-bold" style="font-size: 0.9rem;">Chef Cuisinier</div>
+                        <small class="text-muted">@User.Identity.Name</small>
+
+                    </div>
+                    <div class="bg-orange-resto text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:40px; height:40px; background-color: var(--primary-orange);">CH</div>
+                </div>
+            </div>
+
+            <!-- STATS RAPIDES -->
+            <div class="row g-4 mb-5">
+                <!-- Missions -->
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-blue-light">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <h6 class="text-muted small mb-1">Missions à faire</h6>
+                        <h3 class="fw-bold">@totalTaches</h3>
+                        <i class="fa-solid fa-clipboard-list watermark"></i>
+                    </div>
+                </div>
+
+                <!-- Plats -->
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-orange-light">
+                            <i class="fa-solid fa-fire-burner"></i>
+                        </div>
+                        <h6 class="text-muted small mb-1">Plats en attente</h6>
+                        <h3 class="fw-bold">@Model.NbCommandesEnAttente</h3>
+                        <i class="fa-solid fa-fire-burner watermark"></i>
+                    </div>
+                </div>
+
+                <!-- Stock -->
+                <div class="col-md-4">
+                    <div class="stat-card @(totalAlertes > 0 ? "border-danger shadow-sm" : "")">
+                        <div class="icon-box @(totalAlertes > 0 ? "bg-red-light" : "bg-light")">
+                            <i class="fa-solid fa-triangle-exclamation @(totalAlertes > 0 ? "text-danger" : "")"></i>
+                        </div>
+                        <h6 class="text-muted small mb-1">Alertes Stock</h6>
+                        <h3 class="fw-bold @(totalAlertes > 0 ? "text-danger" : "")">@totalAlertes Produits</h3>
+                        <i class="fa-solid fa-triangle-exclamation watermark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- COLONNE GAUCHE : TÂCHES -->
+                <div class="col-lg-7">
+                    <div class="table-card h-100">
+                        <h5 class="fw-bold mb-4"><i class="fa-solid fa-thumbtack text-primary me-2"></i>Mes Tâches Prioritaires</h5>
+                        <div class="list-group list-group-flush">
+                            @if (!Model.MesTaches.Any())
+                            {
+                                <div class="text-center py-5">
+                                    <i class="fa-solid fa-circle-check text-success fa-3x mb-3"></i>
+                                    <p class="text-muted">Toutes les tâches sont terminées !</p>
+                                </div>
+                            }
+                            @foreach (var tache in Model.MesTaches)
+                            {
+                                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-3 border-bottom">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">@tache.Description</h6>
+                                        <div class="d-flex align-items-center">
+                                            <small class="text-muted">Reçu le @tache.DateDebut.ToString("dd/MM HH:mm")</small>
+
+                                            @* Affichage du badge de statut *@
+                                            @if (tache.Statut == "En cours")
+                                            {
+                                                <span class="badge bg-info text-dark ms-2" style="font-size: 0.7rem;">En cours</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        @* Bouton Démarrer (s'affiche si la tâche n'est pas encore commencée) *@
+                                        @if (tache.Statut != "En cours")
+                                        {
+                                            <form asp-action="MettreEnCours" method="post">
+                                                <input type="hidden" name="id" value="@tache.IdTache" />
+                                                <button type="submit" class="btn btn-sm btn-warning rounded-pill px-3">
+                                                    <i class="fa-solid fa-play me-1"></i> Démarrer
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @* Bouton Terminer *@
+                                        <form asp-action="TerminerTache" method="post">
+                                            <input type="hidden" name="id" value="@tache.IdTache" />
+                                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                                                <i class="fa-solid fa-check me-1"></i> Terminer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLONNE DROITE : STOCK -->
+                <div class="col-lg-5">
+                    <div class="table-card h-100">
+                        <h5 class="fw-bold mb-4"><i class="fa-solid fa-boxes-stacked text-danger me-2"></i>Stock à surveiller</h5>
+                        @foreach (var item in Model.IngredientsAlerte.Take(5))
+                        {
+                            <div class="d-flex align-items-center mb-3 p-2 border-bottom">
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-0">@item.Nom</h6>
+                                    <small class="text-danger fw-bold">Reste : @item.QuantiteDisponible @item.Unite</small>
+                                </div>
+                                <a asp-action="Stock" class="btn btn-sm btn-light shadow-sm"><i class="fa-solid fa-eye"></i></a>
+                            </div>
+                        }
+                        <a asp-action="Stock" class="btn btn-sm w-100 btn-outline-dark mt-3 rounded-pill">Voir tout le stock</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

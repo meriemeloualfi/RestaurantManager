@@ -1,0 +1,184 @@
+﻿@model RestaurantManager.Models.Ingredient
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Détails Ingrédient | Cuisine</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+            .sidebar .nav-link.active {
+                background: var(--primary-orange);
+                color: white;
+            }
+
+        .detail-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 12px 20px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                transition: 0.3s;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 15px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: var(--primary-orange);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+                }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        .sidebar form .nav-link:hover {
+            background: transparent !important;
+            color: rgba(255,255,255,0.7) !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- SIDEBAR DU CHEF -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link" asp-controller="Cuisinier" asp-action="Index">
+                    <i class="fa-solid fa-fire-burner"></i> Dashboard
+                </a>
+                <a class="nav-link" asp-controller="Cuisinier" asp-action="Taches">
+                    <i class="fa-solid fa-list-check"></i> Mes Tâches
+                </a>
+                <a class="nav-link active" asp-controller="Cuisinier" asp-action="Stock">
+                    <i class="fa-solid fa-boxes-stacked"></i> Stock
+                </a>
+
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+            </div>
+
+        <div class="main-content">
+            <div class="mb-4">
+                <a asp-action="Stock" class="text-muted text-decoration-none"><i class="fa-solid fa-arrow-left me-2"></i> Retour au stock</a>
+            </div>
+
+            <div class="detail-card row g-0">
+                <div class="col-md-5">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="~/images/ingredients/@Model.ImagePath" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="h-100 d-flex align-items-center justify-content-center bg-light text-muted" style="min-height: 300px;">
+                            <i class="fa-solid fa-utensils fa-5x opacity-25"></i>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-7 p-5">
+                    <span class="badge bg-warning text-dark mb-3">Informations Ingrédient</span>
+                    <h1 class="fw-bold">@Model.Nom</h1>
+                    <hr>
+                    <div class="row mt-4">
+                        <div class="col-6 mb-4">
+                            <label class="text-muted small text-uppercase fw-bold d-block">Quantité Actuelle</label>
+                            <span class="h4 fw-bold">@Model.QuantiteDisponible @Model.Unite</span>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <label class="text-muted small text-uppercase fw-bold d-block">Seuil d'alerte</label>
+                            <span class="h4 fw-bold text-danger">@Model.SeuilAlerte @Model.Unite</span>
+                        </div>
+                    </div>
+                    <div class="bg-light p-4 rounded-4 mt-3">
+                        <i class="fa-solid fa-circle-info text-primary me-2"></i>
+                        Ceci est une vue en lecture seule. Pour modifier le stock, utilisez l'ajustement rapide dans la liste.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

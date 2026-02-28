@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Accueil";
+}
+
+<style>
+    /* 1. On utilise @@ pour échapper le symbole Razor */
+    @@keyframes floatUpDown {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-25px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .hero-floating {
+        animation: floatUpDown 3s ease-in-out infinite;
+        display: inline-block;
+    }
+
+    .orange-text {
+        color: #ff6b01;
+        font-weight: bold;
+    }
+
+    .btn-orange {
+        background-color: #ff6b01;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        border: none;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-orange:hover {
+            background-color: #e55a00;
+            color: white;
+            transform: scale(1.05);
+        }
+
+    .btn-outline-orange {
+        border: 2px solid #ff6b01;
+        color: #ff6b01;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #ff6b01;
+            color: white;
+        }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row align-items-center" style="min-height: 70vh;">
+        <!-- Texte à gauche -->
+        <div class="col-md-6">
+            <h1 class="hero-title">
+                <span class="orange-text">Quick</span> and <span class="orange-text">Tasty</span><br />
+                Food with a Dash of <span class="orange-text">Speed</span>
+            </h1>
+            <div class="mt-5">
+                <a href="/Plats" class="btn btn-orange me-3 shadow-sm">Order Now</a>
+                <a href="/Commandes" class="btn btn-outline-orange">Track Order</a>
+            </div>
+        </div>
+
+        <!-- Image à droite avec l'animation -->
+        <div class="col-md-6 text-center">
+            <div class="hero-floating">
+                <img src="~/images/hero-food.jpg"
+                     class="img-fluid"
+                     alt="Food Platter"
+                     style="width: 500px; height: 500px; border-radius: 50%; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 8px solid white;" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,217 @@
+﻿@model RestaurantManager.Models.Ingredient
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supprimer l'ingrédient | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        .main-content {
+            background-color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .delete-card-container {
+            max-width: 550px;
+            width: 100%;
+        }
+
+        .premium-delete-card {
+            background: white;
+            border-radius: 40px;
+            padding: 60px 40px 40px;
+            text-align: center;
+            border: 1px solid #fee2e2;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        /* L'icône flottante pour le stock */
+        .danger-icon-float {
+            width: 90px;
+            height: 90px;
+            background: #ef4444;
+            color: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-10deg);
+            box-shadow: 0 15px 30px rgba(239, 68, 68, 0.3);
+            border: 6px solid white;
+        }
+
+        .ingredient-confirm-box {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 25px;
+            margin: 35px 0;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+
+        .confirm-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 18px;
+            object-fit: cover;
+            margin-right: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            background: white;
+        }
+
+        .confirm-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 18px;
+            background: #fef2f2;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-right: 20px;
+        }
+
+        .warning-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-top: 10px;
+        }
+
+        .warning-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-confirm-final {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+            margin-bottom: 20px;
+        }
+
+            .btn-confirm-final:hover {
+                background: #dc2626;
+                transform: translateY(-3px);
+                box-shadow: 0 15px 30px rgba(239, 68, 68, 0.3);
+                color: white;
+            }
+
+        .btn-abort {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+            .btn-abort:hover {
+                color: #1e293b;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a class="nav-link" href="/Plats"><i class="fa-solid fa-burger"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link active" href="/Stocks"><i class="fa-solid fa-box"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line"></i> Ventes</a>
+                <!-- Cette section doit être la DERNIÈRE à l'intérieur de votre <nav> -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="delete-card-container">
+                <div class="premium-delete-card">
+
+                    <!-- Icône de corbeille flottante -->
+                    <div class="danger-icon-float">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+
+                    <h2 class="warning-title">Retirer du stock ?</h2>
+                    <p class="warning-subtitle px-3">
+                        Êtes-vous sûr de vouloir supprimer <strong>@Model.Nom</strong> ? Cette action est définitive et l'ingrédient ne sera plus disponible pour vos recettes.
+                    </p>
+
+                    <!-- Boîte d'identification de l'ingrédient -->
+                    <div class="ingredient-confirm-box">
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <img src="~/images/ingredients/@Model.ImagePath" class="confirm-img" alt="@Model.Nom" />
+                        }
+                        else
+                        {
+                            <div class="confirm-placeholder">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                        }
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 1.2rem;">@Model.Nom</div>
+                            <div class="text-muted small mt-1">
+                                Stock actuel : <span class="badge bg-white text-danger border">@Model.QuantiteDisponible @Model.Unite</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de suppression -->
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="IdIngredient" />
+                        <button type="submit" class="btn-confirm-final">
+                            <i class="fa-solid fa-check-circle me-2"></i> Confirmer la suppression
+                        </button>
+                    </form>
+
+                    <a asp-action="Index" class="btn-abort">
+                        Annuler et retourner à l'inventaire
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

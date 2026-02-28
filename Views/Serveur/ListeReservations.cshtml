@@ -1,0 +1,347 @@
+﻿@model IEnumerable<RestaurantManager.Models.Reservation>
+@{
+    Layout = null;
+    var reservationsAujourdhui = Model.Count(r => r.DateReservation.Date == DateTime.Today);
+    var grandesTables = Model.Count(r => r.NbPersonnes >= 6);
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Réservations | Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #ff7b2e;
+            --dark-blue: #1e293b;
+            --light-bg: #f8fafc;
+            --success-green: #10b981;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: #475569;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 12px 20px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 15px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: var(--primary-orange);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(255, 123, 46, 0.3);
+                }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .text-orange-resto {
+            color: var(--primary-orange);
+        }
+
+        /* HEADER PROFILE */
+        .profile-badge {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-orange);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* STAT CARDS (Style Gérant) */
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        .watermark {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+        }
+
+        .bg-orange-light {
+            background: #fff7ed;
+            color: var(--primary-orange);
+        }
+
+        .bg-green-light {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+
+        .bg-blue-light {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        /* TABLE DESIGN */
+        .table-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            border: none;
+        }
+
+        .table thead th {
+            background: #f8fafc;
+            border: none;
+            color: #64748b;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            padding: 20px 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* BADGES */
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .status-confirmed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-pending {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .table-tag {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column h-100">
+                <a class="nav-link" asp-action="Index"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a class="nav-link" asp-action="PrendreCommande"><i class="fa-solid fa-plus-circle"></i> Prendre Commande</a>
+                <a class="nav-link active" asp-action="ListeReservations"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+                <a class="nav-link" asp-action="MesTaches"><i class="fa-solid fa-list-check"></i> Mes Tâches</a>
+                <a class="nav-link" asp-action="MesVentes"><i class="fa-solid fa-receipt"></i> Mes Ventes</a>
+
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin-top: auto; padding-bottom: 20px;">
+                    <button type="submit" class="nav-link bg-transparent border-0 text-danger w-100 text-start">
+                        <i class="fa-solid fa-power-off"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER AVEC PROFIL -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-0">Registre des <span class="text-orange-resto">Arrivées</span></h2>
+                    <small class="text-muted">Gestion en temps réel des réservations clients</small>
+                </div>
+
+                <div class="profile-badge d-flex align-items-center">
+                    <div class="me-3 text-end d-none d-sm-block">
+                        <div class="fw-bold small">Espace Serveur</div>
+                        <small class="text-muted" style="font-size: 0.7rem;">@DateTime.Now.ToString("dd MMM yyyy")</small>
+                    </div>
+                    <div class="avatar-circle">S</div>
+                </div>
+            </div>
+
+            <!-- STATS SECTION -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-blue-light"><i class="fa-solid fa-book-bookmark"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Total Réservations</h6>
+                        <h3 class="fw-bold mb-0">@Model.Count()</h3>
+                        <i class="fa-solid fa-book-bookmark watermark"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-green-light"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Prévues ce jour</h6>
+                        <h3 class="fw-bold mb-0">@reservationsAujourdhui</h3>
+                        <i class="fa-solid fa-calendar-check watermark"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon-box bg-orange-light"><i class="fa-solid fa-users-rectangle"></i></div>
+                        <h6 class="text-muted small mb-1 fw-bold">Grandes Tables (+6)</h6>
+                        <h3 class="fw-bold mb-0">@grandesTables</h3>
+                        <i class="fa-solid fa-users-rectangle watermark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLEAU PREMIUM -->
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border-0">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Date & Heure</th>
+                                <th>Emplacement</th>
+                                <th class="text-center">Couverts</th>
+                                <th>Statut</th>
+                                <th>Remarques</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fw-bold">
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-calendar-xmark mb-3 d-block fa-3x opacity-25"></i>
+                                        Aucune réservation à afficher.
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var res in Model)
+                            {
+                                <tr>
+                                    <td class="py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded-circle p-2 me-3 text-primary" style="width:35px; height:35px; display:flex; align-items:center; justify-content:center;">
+                                                <i class="fa-solid fa-user small"></i>
+                                            </div>
+                                            <span class="text-dark">@res.NomClient</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark">@res.DateReservation.ToString("dd MMM yyyy")</div>
+                                        <small class="text-muted fw-normal"><i class="fa-regular fa-clock me-1 text-orange-resto"></i> @res.Heure</small>
+                                    </td>
+                                    <td>
+                                        <span class="table-tag">
+                                            🪑 Table @res.NumeroTable
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="bg-light rounded-pill d-inline-block px-3 py-1">
+                                            <i class="fa-solid fa-user-group me-1 small text-muted"></i> @res.NbPersonnes
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (res.Statut == "Confirmée")
+                                        {
+                                            <span class="status-pill status-confirmed"><i class="fa-solid fa-check-circle me-1"></i> @res.Statut</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-pill status-pending"><i class="fa-solid fa-clock me-1"></i> @res.Statut</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small class="text-muted fw-normal">
+                                            @(string.IsNullOrEmpty(res.Remarques) ? "—" : res.Remarques)
+                                        </small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,331 @@
+﻿@model RestaurantManager.Models.Plat
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détails Plat - Food Dash</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* --- CONFIGURATION SIDEBAR (DÉCONNEXION EN BAS) --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+            .sidebar .nav {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1; /* Remplit l'espace pour pousser le bouton vers le bas */
+            }
+
+        .logout-section {
+            margin-top: auto; /* Pousse vers le bas */
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-logout {
+            color: #dc3545 !important; /* Rouge Bootstrap */
+            font-weight: 600;
+            transition: all 0.2s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+            .btn-logout:hover {
+                background-color: #fff5f5 !important;
+                color: #a52834 !important;
+            }
+
+        /* --- DESIGN ULTIMATE PRO --- */
+        .main-content {
+            background-color: #f4f7fa;
+            padding: 40px !important;
+        }
+
+        .page-top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .btn-back-soft {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: 0.3s;
+        }
+
+            .btn-back-soft:hover {
+                background: #f8fafc;
+                color: #ff7b2e;
+            }
+
+        .master-details-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card-top-banner {
+            padding: 40px 50px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #ffffff, #fafbfc);
+        }
+
+        .dish-id-badge {
+            font-size: 0.7rem;
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .dish-main-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #22c55e;
+            background: #f0fdf4;
+            padding: 6px 16px;
+            border-radius: 50px;
+        }
+
+        .card-main-body {
+            padding: 50px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 60px;
+        }
+
+        .dish-image-frame img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .price-display-box {
+            margin-top: 25px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid #eff2f5;
+            text-align: center;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+            display: block;
+        }
+
+        .price-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff7b2e;
+        }
+
+        .info-group {
+            margin-bottom: 30px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .info-content {
+            font-size: 1.05rem;
+            color: #334155;
+            line-height: 1.8;
+        }
+
+        .card-action-footer {
+            padding: 30px 50px;
+            background: #fafbfc;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-pro-edit {
+            background: #0f172a;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            text-decoration: none !important;
+        }
+
+            .btn-pro-edit:hover {
+                background: #334155;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        .btn-pro-delete {
+            background: white;
+            color: #ef4444;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 1px solid #fee2e2;
+            text-decoration: none !important;
+            transition: 0.3s;
+        }
+
+            .btn-pro-delete:hover {
+                background: #fef2f2;
+            }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3 class="fw-bold mb-5">Food Dash <span class="text-orange-resto">.</span> </h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/Gerant"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+                <a class="nav-link active" href="/Plats"><i class="fa-solid fa-burger me-2"></i> Menu / Plats</a>
+                <a class="nav-link" href="/Employes"><i class="fa-solid fa-users me-2"></i> Personnel</a>
+                <a class="nav-link" href="/Reservations"><i class="fa-solid fa-calendar-check me-2"></i> Réservations</a>
+                <a class="nav-link" href="/Stocks"><i class="fa-solid fa-box me-2"></i> Stocks</a>
+                <a class="nav-link" href="/Ventes"><i class="fa-solid fa-chart-line me-2"></i> Ventes</a>
+
+                <!-- SECTION DÉCONNEXION -->
+                <div class="logout-section">
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit" class="bg-transparent border-0 btn-logout text-start">
+                            <i class="fa-solid fa-power-off me-2"></i> Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="page-top-nav">
+                <a asp-action="Index" class="btn-back-soft">
+                    <i class="fa-solid fa-arrow-left me-2"></i> Catalogue
+                </a>
+                <div class="text-muted small fw-medium">Gestion Menu > Détails Plat</div>
+            </div>
+
+            <div class="master-details-card">
+                <div class="card-top-banner">
+                    <div>
+                        <span class="dish-id-badge">ID: #00@(Model.IdPlat)</span>
+                        <h1 class="dish-main-title">@Model.Nom</h1>
+                    </div>
+                    <div class="status-pill">
+                        <i class="fa-solid fa-circle fa-2xs"></i> Actif au menu
+                    </div>
+                </div>
+
+                <div class="card-main-body">
+                    <div>
+                        <div class="dish-image-frame">
+                            @if (!string.IsNullOrEmpty(Model.ImagePath))
+                            {
+                                <img src="~/images/plats/@Model.ImagePath" alt="@Model.Nom" />
+                            }
+                            else
+                            {
+                                <div class="h-100 w-100 bg-light rounded-4 d-flex align-items-center justify-content-center" style="min-height:350px">
+                                    <i class="fa-solid fa-image fa-4x text-muted opacity-25"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="price-display-box">
+                            <span class="price-label">Tarif actuel</span>
+                            <span class="price-value">@Model.Prix.ToString("N2") <small style="font-size:0.6em">DH</small></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="info-group">
+                            <span class="info-label">Description détaillée</span>
+                            <p class="info-content">
+                                @(string.IsNullOrEmpty(Model.Description) ? "Aucune description n'a été rédigée pour ce plat." : Model.Description)
+                            </p>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Catégorie & Cuisine</span>
+                            <p class="info-content fw-medium">Cuisine Marocaine / Plats Principaux</p>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Dernière mise à jour</span>
+                            <p class="info-content text-muted small">Modifié le @DateTime.Now.ToString("dd MMMM yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-action-footer">
+                    <a asp-action="Delete" asp-route-id="@Model.IdPlat" class="btn-pro-delete">
+                        <i class="fa-solid fa-trash-can me-2"></i> Supprimer
+                    </a>
+                    <div class="d-flex gap-2">
+                        <button onclick="window.print()" class="btn btn-light rounded-3 border px-3">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                        <a asp-action="Edit" asp-route-id="@Model.IdPlat" class="btn-pro-edit">
+                            <i class="fa-solid fa-pen-nib me-2"></i> Modifier les informations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
