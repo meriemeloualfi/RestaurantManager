@@ -86,10 +86,6 @@ RestaurantManager/
 2. Use the navigation menu to manage dishes, ingredients and employees.
 3. Upload images when creating or editing an item.
 
-## Screenshots
-
-![Home](screenshots/home.png)
-![Dishes](screenshots/dishes.png)
 
 ## Future Improvements
 
